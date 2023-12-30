@@ -16,6 +16,11 @@ admin.initializeApp();
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
+enum KeyStatus {
+  approved = 0,
+  review = 1,
+}
+
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
   const projectId = request.data.projectId;
@@ -32,6 +37,7 @@ export const createKey = onCall(async (request) => {
     "translation": translation,
     "createdAt": admin.firestore.FieldValue.serverTimestamp(),
     "lastUpdatedAt": admin.firestore.FieldValue.serverTimestamp(),
+    "status": KeyStatus.review,
   };
 
   try {
