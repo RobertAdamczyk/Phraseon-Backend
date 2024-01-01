@@ -22,6 +22,12 @@ enum KeyStatus {
   review = 1,
 }
 
+enum SubscriptionStatus {
+  trial = "TRIAL",
+  basic = "BASIC",
+  gold = "GOLD",
+}
+
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
   const projectId = request.data.projectId;
@@ -57,11 +63,16 @@ export const createKey = onCall(async (request) => {
 export const onUserCreate = functions.auth.user().onCreate(async (user) => {
   logger.info("onUserCreate", user);
 
+  const subscriptionValidUntil = new Date();
+  subscriptionValidUntil.setDate(subscriptionValidUntil.getDate() + 7);
+
   const newDoc = {
     "email": user.email,
     "createdAt": admin.firestore.FieldValue.serverTimestamp(),
+    "subscriptionValidUntil": subscriptionValidUntil,
     "name": "",
     "surname": "",
+    "subscriptionStatus": SubscriptionStatus.trial,
   };
 
   const documentRef = admin.firestore().collection("users").doc(user.uid);
