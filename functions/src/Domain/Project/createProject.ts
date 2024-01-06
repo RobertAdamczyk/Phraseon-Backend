@@ -37,6 +37,7 @@ export const createProject = onCall(async (request) => {
     role: Role.owner,
     name: userData.name,
     surname: userData.surname,
+    email: userData.email,
     photoUrl: userData.photoUrl,
   };
 
