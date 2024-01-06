@@ -15,6 +15,7 @@ export * from "./Domain/Keys/createKey";
 export * from "./Domain/Project/createProject";
 
 admin.initializeApp();
+admin.firestore().settings({ignoreUndefinedProperties: true});
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
