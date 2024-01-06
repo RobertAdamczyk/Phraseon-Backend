@@ -37,6 +37,7 @@ export const createProject = onCall(async (request) => {
     role: Role.owner,
     name: userData.name,
     surname: userData.surname,
+    photoUrl: userData.photoUrl,
   };
 
   batch.set(memberRef, member);
