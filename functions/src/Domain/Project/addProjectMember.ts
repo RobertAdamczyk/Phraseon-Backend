@@ -9,6 +9,19 @@ export const addProjectMember = onCall(async (request) => {
   const db = admin.firestore();
   const userId = request.data.userId;
 
+  const projectRef = db.collection("projects").doc(request.data.projectId);
+  const memberRef = projectRef.collection("members").doc(userId);
+
+  const projectDoc = await projectRef.get();
+
+  if (!projectDoc.exists) {
+    throw new HttpsError("not-found", "Project not found.");
+  }
+
+  if (projectDoc.data()?.members.includes(userId)) {
+    throw new HttpsError("already-exists", "The user is already a member of the project.");
+  }
+
   const userDoc = await db.collection("users").doc(userId).get();
   const userData = userDoc.data() || {};
 
@@ -19,9 +32,6 @@ export const addProjectMember = onCall(async (request) => {
     email: userData.email,
     photoUrl: userData.photoUrl,
   };
-
-  const projectRef = db.collection("projects").doc(request.data.projectId);
-  const memberRef = projectRef.collection("members").doc(userId);
 
   const batch = db.batch();
 
