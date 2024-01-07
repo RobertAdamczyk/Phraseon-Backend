@@ -4,8 +4,12 @@ import * as admin from "firebase-admin";
 
 export const isUserProjectOwner = onCall(async (request) => {
   logger.info("onCall isUserProjectOwner", request.data);
-  const userId = request.data.userId;
 
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
+  }
+
+  const userId = request.auth.uid;
   const documentsRef = admin.firestore().collection("projects").where("owner", "==", userId);
 
   try {
