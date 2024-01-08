@@ -2,6 +2,7 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import {Member} from "../../Model/member";
+import {Role} from "../../Model/role";
 
 export const addProjectMember = onCall(async (request) => {
   logger.info("onCall addProjectMember", request.data);
@@ -20,6 +21,10 @@ export const addProjectMember = onCall(async (request) => {
 
   if (projectDoc.data()?.members.includes(userId)) {
     throw new HttpsError("already-exists", "The user is already a member of the project.");
+  }
+
+  if (request.data.role === Role.owner) {
+    throw new HttpsError("failed-precondition", "You can't add a second project owner.");
   }
 
   const userDoc = await db.collection("users").doc(userId).get();
