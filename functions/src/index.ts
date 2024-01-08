@@ -17,6 +17,7 @@ export * from "./Domain/Project/createProject";
 export * from "./Domain/Project/addProjectMember";
 export * from "./Domain/Project/changeOwner";
 export * from "./Domain/Project/leaveProject";
+export * from "./Domain/Project/deleteProject";
 
 admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});
