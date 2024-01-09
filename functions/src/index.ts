@@ -18,6 +18,7 @@ export * from "./Domain/Project/addProjectMember";
 export * from "./Domain/Project/changeMemberRole";
 export * from "./Domain/Project/changeOwner";
 export * from "./Domain/Project/leaveProject";
+export * from "./Domain/Project/deleteMember";
 export * from "./Domain/Project/deleteProject";
 
 admin.initializeApp();
