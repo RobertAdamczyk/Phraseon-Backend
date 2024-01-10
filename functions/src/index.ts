@@ -13,6 +13,7 @@ export * from "./Domain/User/onUserCreate";
 export * from "./Domain/User/onUserDelete";
 export * from "./Domain/User/onUserDataUpdate";
 export * from "./Domain/Keys/createKey";
+export * from "./Domain/Keys/changeContentKey";
 export * from "./Domain/Project/createProject";
 export * from "./Domain/Project/addProjectMember";
 export * from "./Domain/Project/changeMemberRole";
