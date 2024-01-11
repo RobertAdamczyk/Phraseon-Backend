@@ -21,6 +21,7 @@ export * from "./Domain/Project/changeOwner";
 export * from "./Domain/Project/leaveProject";
 export * from "./Domain/Project/deleteMember";
 export * from "./Domain/Project/deleteProject";
+export * from "./Domain/Project/setProjectLanguages";
 
 admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});
