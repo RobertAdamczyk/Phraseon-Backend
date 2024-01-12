@@ -23,6 +23,8 @@ export * from "./Domain/Project/deleteMember";
 export * from "./Domain/Project/deleteProject";
 export * from "./Domain/Project/setProjectLanguages";
 export * from "./Domain/Project/setProjectTechnologies";
+export * from "./Domain/Project/onProjectLanguagesUpdate";
+export * from "./Domain/Keys/onKeyCreate";
 
 admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});

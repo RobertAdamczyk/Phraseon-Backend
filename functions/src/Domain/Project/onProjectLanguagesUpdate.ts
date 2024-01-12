@@ -1,26 +1,60 @@
 import {onDocumentUpdated} from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
+import * as admin from "firebase-admin";
+import * as deepl from "deepl-node";
 
 export const onProjectLanguagesUpdate = onDocumentUpdated("projects/{projectId}", async (event) => {
   logger.info("onCall onProjectLanguagesUpdate", event.data?.after.data());
   const newValue = event.data?.after.data();
   const oldvalue = event.data?.before.data();
   const projectId = event.params.projectId;
+  const db = admin.firestore();
 
-  // Sprawdzanie, czy pole 'languages' zostało zmienione
   if (JSON.stringify(oldvalue?.languages) !== JSON.stringify(newValue?.languages)) {
     console.log("Languages changed in project " + projectId);
     const beforeLanguages = oldvalue?.languages || [];
     const afterLanguages = newValue?.languages || [];
 
-    // Tutaj możesz wykonać dodatkowe operacje związane ze zmianą języków
-    // Na przykład: porównaj listy języków, wywołaj inne funkcje, zaktualizuj inne dokumenty itp.
+    const removedLanguages = beforeLanguages.filter((lang: string) => !afterLanguages.includes(lang));
+    const addedLanguages = afterLanguages.filter((lang: string) => !beforeLanguages.includes(lang));
+    console.log("Removed languages:", removedLanguages);
+    console.log("Added languages:", addedLanguages);
 
-    // Przykład logowania zmian
-    console.log("Removed languages:", beforeLanguages.filter((lang: string) => !afterLanguages.includes(lang)));
-    console.log("Added languages:", afterLanguages.filter((lang: string) => !beforeLanguages.includes(lang)));
+    const keysRef = db.collection("projects").doc(projectId).collection("keys");
+    const snapshot = await keysRef.get();
 
-    // Pamiętaj o obsłudze błędów i asynchronicznych operacjach
+    if (removedLanguages.length > 0) {
+      for (const key of snapshot.docs) {
+        const keyRef = keysRef.doc(key.id);
+        for (const lang of removedLanguages) {
+          const fieldName = "translation." + lang;
+          await keyRef.update({
+            [fieldName]: admin.firestore.FieldValue.delete(),
+          });
+        }
+      }
+    }
+
+    if (addedLanguages.length > 0) {
+      const deepLApiKey = process.env.PLANET;
+      if (deepLApiKey === undefined || deepLApiKey === null) {
+        return;
+      }
+      const translator = new deepl.Translator(deepLApiKey);
+
+      for (const key of snapshot.docs) {
+        const keyRef = keysRef.doc(key.id);
+        for (const lang of addedLanguages) {
+          const textToTranslate: string = key.data().translation[newValue?.baseLanguage];
+          const result = await translator.translateText(textToTranslate, null, lang as deepl.TargetLanguageCode);
+          const deeplResult = result as deepl.TextResult;
+          const fieldName = "translation." + lang;
+          await keyRef.update({
+            [fieldName]: deeplResult.text,
+          });
+        }
+      }
+    }
   } else {
     console.log("Languages did not change");
   }
