@@ -1,12 +1,12 @@
 export enum Language {
     english = "EN",
     mandarinChinese = "ZH",
-    hindi = "HI",
+    polish = "PL",
     spanish = "ES",
     french = "FR",
-    arabic = "AR",
-    bengali = "BN",
+    turkish = "TR",
+    japanese = "JA",
     russian = "RU",
-    portuguese = "PT",
+    portuguese = "PT-PT",
     indonesian = "ID",
 }
