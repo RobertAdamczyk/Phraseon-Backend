@@ -25,6 +25,7 @@ export * from "./Domain/Project/setProjectLanguages";
 export * from "./Domain/Project/setProjectTechnologies";
 export * from "./Domain/Project/onProjectLanguagesUpdate";
 export * from "./Domain/Keys/onKeyCreate";
+export * from "./Domain/Keys/getKeys";
 
 admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});
