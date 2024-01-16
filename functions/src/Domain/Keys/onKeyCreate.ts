@@ -3,7 +3,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import * as deepl from "deepl-node";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import {Language} from "../../Model/language";
+import {Language} from "../../Model/Language";
 
 export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}", async (event) => {
   logger.info("onCall onKeyCreate", event);

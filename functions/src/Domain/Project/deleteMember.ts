@@ -21,6 +21,10 @@ export const deleteMember = onCall(async (request) => {
   const currentMemberRef = projectRef.collection("members").doc(userId);
   const currentMemberDoc = await currentMemberRef.get();
 
+  if (userId == userIdToDelete) {
+    throw new HttpsError("failed-precondition", "You can't delete yourself, instead leave the project.");
+  }
+
   if (!currentMemberDoc.exists) {
     throw new HttpsError("not-found", "Current member not found.");
   }
