@@ -46,7 +46,9 @@ export const onProjectLanguagesUpdate = onDocumentUpdated("projects/{projectId}"
         const keyRef = keysRef.doc(key.id);
         for (const lang of addedLanguages) {
           const textToTranslate: string = key.data().translation[newValue?.baseLanguage];
-          const result = await translator.translateText(textToTranslate, null, lang as deepl.TargetLanguageCode);
+          const sourceLanguage = newValue?.baseLanguage.split("-")[0] as deepl.SourceLanguageCode;
+          const targetLanguage = lang as deepl.TargetLanguageCode;
+          const result = await translator.translateText(textToTranslate, sourceLanguage, targetLanguage);
           const deeplResult = result as deepl.TextResult;
           const fieldName = "translation." + lang;
           await keyRef.update({

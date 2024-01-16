@@ -41,7 +41,9 @@ export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}"
 
   try {
     for (const language of languagesToTranslate) {
-      const result = await translator.translateText(textToTranslation, null, language as deepl.TargetLanguageCode);
+      const sourceLanguage = baseLanguage.split("-")[0] as deepl.SourceLanguageCode;
+      const targetLanguage = language as deepl.TargetLanguageCode;
+      const result = await translator.translateText(textToTranslation, sourceLanguage, targetLanguage);
       const field = "translation." + language;
       const deeplResult = result as deepl.TextResult;
       await keyRef.update({[field]: deeplResult.text});
