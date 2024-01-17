@@ -3,4 +3,5 @@ export enum Role {
     viewer = "VIEWER",
     developer = "DEVELOPER",
     admin = "ADMIN",
+    marketing = "MARKETING",
 }
