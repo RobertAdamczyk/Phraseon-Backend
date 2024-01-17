@@ -7,6 +7,7 @@ export const changeContentKey = onCall(async (request) => {
   const projectId = request.data.projectId;
   const keyId = request.data.keyId;
   const translation = request.data.translation;
+  const language = request.data.language;
 
   if (!keyId) {
     throw new HttpsError("invalid-argument", "Invalid key ID.");
@@ -16,7 +17,7 @@ export const changeContentKey = onCall(async (request) => {
 
   try {
     await documentRef.set({
-      "translation": translation,
+      "translation": {[language]: translation},
       "lastUpdatedAt": admin.firestore.FieldValue.serverTimestamp(),
     }, {merge: true});
     return {message: "Document created successfully."};

@@ -8,6 +8,7 @@ export const createKey = onCall(async (request) => {
   const projectId = request.data.projectId;
   const keyId = request.data.keyId;
   const translation = request.data.translation;
+  const language = request.data.language;
 
   if (!keyId) {
     throw new HttpsError("invalid-argument", "Invalid key ID.");
@@ -16,10 +17,10 @@ export const createKey = onCall(async (request) => {
   const documentRef = admin.firestore().collection("projects").doc(projectId).collection("keys").doc(keyId);
 
   const newDoc = {
-    "translation": translation,
+    "translation": {[language]: translation},
     "createdAt": admin.firestore.FieldValue.serverTimestamp(),
     "lastUpdatedAt": admin.firestore.FieldValue.serverTimestamp(),
-    "status": KeyStatus.review,
+    "status": {[language]: KeyStatus.review},
   };
 
   try {
