@@ -30,9 +30,9 @@ export const approveTranslation = onCall(async (request) => {
   const documentRef = projectRef.collection("keys").doc(keyId);
 
   try {
-    await documentRef.update({
+    await documentRef.set({
       "status": {[language]: KeyStatus.approved},
-    });
+    }, {merge: true});
     return {message: "Document created successfully."};
   } catch (error) {
     throw new HttpsError("unknown", "An error occurred while processing your request.", error);
