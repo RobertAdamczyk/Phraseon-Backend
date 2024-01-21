@@ -5,4 +5,5 @@ export enum ErrorCode {
     PermissionDenied = "PERMISSION_DENIED",
     UserUnauthenticated = "USER_UNAUTHENTICATED",
     DatabaseError = "DATABASE_ERROR",
+    InvalidKeyID = "INVALID_KEY_ID",
 }

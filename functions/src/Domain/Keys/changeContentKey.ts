@@ -15,7 +15,7 @@ export const changeContentKey = onCall(async (request) => {
   const db = admin.firestore();
 
   if (!keyId) {
-    throw new HttpsError("invalid-argument", "Invalid key ID.");
+    throw new HttpsError("invalid-argument", ErrorCode.InvalidKeyID);
   }
 
   const userId = verifyAuthentication(request).uid;
