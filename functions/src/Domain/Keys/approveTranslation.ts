@@ -1,8 +1,11 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import {Role} from "../../Model/role";
 import {KeyStatus} from "../../Model/keyStatus";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserRole} from "../../Common/getUserRole";
+import {assertPermission, Action} from "../../Common/assertPermission";
+import {ErrorCode} from "../../Model/errorCode";
 
 export const approveTranslation = onCall(async (request) => {
   logger.info("onCall approveTranslation", request.data);
@@ -11,31 +14,20 @@ export const approveTranslation = onCall(async (request) => {
   const language = request.data.language;
   const db = admin.firestore();
 
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
-  }
+  const userId = verifyAuthentication(request).uid;
 
-  const userId = request.auth.uid;
+  const role = await getUserRole(projectId, userId);
+  assertPermission(role, Action.approveTranslation);
 
-  const projectRef = db.collection("projects").doc(projectId);
-  const currentMemberRef = projectRef.collection("members").doc(userId);
-  const currentMemberDoc = await currentMemberRef.get();
-
-  const allowedRoles = [Role.admin, Role.owner, Role.marketing];
-  const userRole = currentMemberDoc.data()?.role;
-  if (!allowedRoles.includes(userRole)) {
-    throw new HttpsError("failed-precondition", "Missing permission.");
-  }
-
-  const documentRef = projectRef.collection("keys").doc(keyId);
+  const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 
   try {
     await documentRef.set({
       "status": {[language]: KeyStatus.approved},
     }, {merge: true});
-    return {message: "Document created successfully."};
+    return;
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError, error);
   }
 });
 
