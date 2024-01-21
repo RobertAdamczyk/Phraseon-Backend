@@ -24,6 +24,7 @@ export * from "./Domain/Project/deleteProject";
 export * from "./Domain/Project/setProjectLanguages";
 export * from "./Domain/Project/setProjectTechnologies";
 export * from "./Domain/Project/onProjectLanguagesUpdate";
+export * from "./Domain/Project/setBaseLanguage";
 export * from "./Domain/Keys/onKeyCreate";
 export * from "./Domain/Keys/getKeys";
 export * from "./Domain/Keys/deleteKey";
