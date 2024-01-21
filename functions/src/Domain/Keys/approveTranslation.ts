@@ -22,12 +22,12 @@ export const approveTranslation = onCall(async (request) => {
   const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 
   try {
-    await documentRef.set({
-      "status": {[language]: KeyStatus.approved},
-    }, {merge: true});
+    await documentRef.update({
+      ["status." + language]: KeyStatus.approved,
+    });
     return;
   } catch (error) {
-    throw new HttpsError("unknown", ErrorCode.DatabaseError, error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
 

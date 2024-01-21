@@ -1,6 +1,10 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import {ErrorCode} from "../../Model/errorCode";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserRole} from "../../Common/getUserRole";
+import {Action, assertPermission} from "../../Common/assertPermission";
 
 export const changeContentKey = onCall(async (request) => {
   logger.info("onCall changeContentKey", request.data);
@@ -8,21 +12,26 @@ export const changeContentKey = onCall(async (request) => {
   const keyId = request.data.keyId;
   const translation = request.data.translation;
   const language = request.data.language;
+  const db = admin.firestore();
 
   if (!keyId) {
     throw new HttpsError("invalid-argument", "Invalid key ID.");
   }
 
-  const documentRef = admin.firestore().collection("projects").doc(projectId).collection("keys").doc(keyId);
+  const userId = verifyAuthentication(request).uid;
+  const role = await getUserRole(projectId, userId);
+  assertPermission(role, Action.changeContentKey);
+
+  const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 
   try {
-    await documentRef.set({
-      "translation": {[language]: translation},
+    await documentRef.update({
+      ["translation." + language]: translation,
       "lastUpdatedAt": admin.firestore.FieldValue.serverTimestamp(),
-    }, {merge: true});
-    return {message: "Document created successfully."};
+    });
+    return;
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
 

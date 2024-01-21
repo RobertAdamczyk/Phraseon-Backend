@@ -4,6 +4,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 
 export enum Action {
   approveTranslation = "approveTranslation",
+  changeContentKey = "changeContentKey",
 }
 
 type RolePermissions = {
@@ -11,10 +12,10 @@ type RolePermissions = {
 };
 
 const rolePermissions: RolePermissions = {
-  [Role.owner]: [Action.approveTranslation],
-  [Role.admin]: [Action.approveTranslation],
-  [Role.developer]: [],
-  [Role.marketing]: [Action.approveTranslation],
+  [Role.owner]: [Action.approveTranslation, Action.changeContentKey],
+  [Role.admin]: [Action.approveTranslation, Action.changeContentKey],
+  [Role.developer]: [Action.changeContentKey],
+  [Role.marketing]: [Action.approveTranslation, Action.changeContentKey],
   [Role.viewer]: [],
 };
 
