@@ -7,12 +7,17 @@ import {Role} from "../../Model/role";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserData} from "../../Common/getUserData";
+import {verifyLanguage, verifyLanguages} from "../../Common/verifyLanguage";
 
 export const createProject = onCall(async (request) => {
   logger.info("onCall createProject", request.data);
 
   const db = admin.firestore();
+  const languages = request.data.languages;
+  const baseLanguage = request.data.baseLanguage;
 
+  verifyLanguages(languages);
+  verifyLanguage(baseLanguage);
   const userId = verifyAuthentication(request).uid;
   const userData = await getUserData(userId);
 
@@ -22,8 +27,8 @@ export const createProject = onCall(async (request) => {
   const project: Project = {
     name: request.data.name,
     technologies: request.data.technologies,
-    languages: request.data.languages,
-    baseLanguage: request.data.baseLanguage,
+    languages: languages,
+    baseLanguage: baseLanguage,
     members: [userId],
     owner: userId,
   };

@@ -6,6 +6,7 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {assertPermission, Action} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
+import {verifyLanguage} from "../../Common/verifyLanguage";
 
 export const approveTranslation = onCall(async (request) => {
   logger.info("onCall approveTranslation", request.data);
@@ -15,6 +16,7 @@ export const approveTranslation = onCall(async (request) => {
   const db = admin.firestore();
 
   const userId = verifyAuthentication(request).uid;
+  verifyLanguage(language);
 
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.approveTranslation);

@@ -6,6 +6,7 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {verifyKeyId} from "../../Common/verifyKeyId";
+import {verifyLanguage} from "../../Common/verifyLanguage";
 
 export const changeContentKey = onCall(async (request) => {
   logger.info("onCall changeContentKey", request.data);
@@ -16,6 +17,7 @@ export const changeContentKey = onCall(async (request) => {
   const db = admin.firestore();
 
   verifyKeyId(keyId);
+  verifyLanguage(language);
 
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);

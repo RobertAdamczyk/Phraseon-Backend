@@ -7,6 +7,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
+import {verifyLanguage} from "../../Common/verifyLanguage";
 
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
@@ -15,6 +16,7 @@ export const createKey = onCall(async (request) => {
   const translation = request.data.translation;
   const language = request.data.language;
 
+  verifyLanguage(language);
   verifyKeyId(keyId);
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);
