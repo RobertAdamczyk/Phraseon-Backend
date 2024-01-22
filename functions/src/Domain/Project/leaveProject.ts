@@ -1,28 +1,22 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import {ErrorCode} from "../../Model/errorCode";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserRole} from "../../Common/getUserRole";
+import {Action, assertPermission} from "../../Common/assertPermission";
 
 export const leaveProject = onCall(async (request) => {
   logger.info("onCall leaveProject", request.data);
 
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
-  }
-
   const db = admin.firestore();
-  const userId = request.auth.uid;
   const projectId = request.data.projectId;
 
   const projectRef = db.collection("projects").doc(projectId);
-  const projectDoc = await projectRef.get();
 
-  if (!projectDoc.exists) {
-    throw new HttpsError("not-found", "Project not found.");
-  }
-
-  if (projectDoc.data()?.owner === userId ) {
-    throw new HttpsError("failed-precondition", "You can't leave the project as the current owner.");
-  }
+  const userId = verifyAuthentication(request).uid;
+  const role = await getUserRole(projectId, userId);
+  assertPermission(role, Action.leaveProject);
 
   const memberRef = projectRef.collection("members").doc(userId);
 
@@ -34,8 +28,8 @@ export const leaveProject = onCall(async (request) => {
 
   try {
     await batch.commit();
-    return {message: "Project left successfully."};
+    return;
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });

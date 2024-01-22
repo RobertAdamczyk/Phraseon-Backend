@@ -4,19 +4,17 @@ import * as admin from "firebase-admin";
 import {Project} from "../../Model/project";
 import {Member} from "../../Model/member";
 import {Role} from "../../Model/role";
+import {ErrorCode} from "../../Model/errorCode";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserData} from "../../Common/getUserData";
 
 export const createProject = onCall(async (request) => {
   logger.info("onCall createProject", request.data);
 
   const db = admin.firestore();
 
-  const userId = request.auth?.uid;
-  if (userId === undefined || userId === null) {
-    throw new HttpsError("unauthenticated", "An error occurred while processing your request.");
-  }
-
-  const userDoc = await db.collection("users").doc(userId).get();
-  const userData = userDoc.data() || {};
+  const userId = verifyAuthentication(request).uid;
+  const userData = await getUserData(userId);
 
   const batch = db.batch();
 
@@ -45,9 +43,9 @@ export const createProject = onCall(async (request) => {
 
   try {
     await batch.commit();
-    return {message: "Document created successfully."};
+    return;
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
 

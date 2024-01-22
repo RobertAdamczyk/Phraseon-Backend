@@ -1,16 +1,15 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserRole} from "../../Common/getUserRole";
+import {Action, assertPermission} from "../../Common/assertPermission";
+import {ErrorCode} from "../../Model/errorCode";
 
 export const deleteProject = onCall(async (request) => {
   logger.info("onCall deleteProject", request.data);
 
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "The function must be called while authenticated.");
-  }
-
   const db = admin.firestore();
-  const userId = request.auth.uid;
   const projectId = request.data.projectId;
 
   const projectRef = db.collection("projects").doc(projectId);
@@ -25,9 +24,9 @@ export const deleteProject = onCall(async (request) => {
       throw new HttpsError("not-found", "Project not found.");
     }
 
-    if (projectDoc.data()?.owner !== userId) {
-      throw new HttpsError("permission-denied", "Only the project owner can delete the project.");
-    }
+    const userId = verifyAuthentication(request).uid;
+    const role = await getUserRole(projectId, userId);
+    assertPermission(role, Action.deleteProject);
 
     const projectData = projectDoc.data();
     const deletedProjectRef = deletedProjectsRef.doc(projectId);
@@ -61,8 +60,8 @@ export const deleteProject = onCall(async (request) => {
       keysSnapshot.docs.forEach((doc) => transaction.delete(doc.ref));
       membersSnapshot.docs.forEach((doc) => transaction.delete(doc.ref));
     });
-    return {message: "Project and its keys and members moved to deleted projects."};
+    return;
   } catch (error) {
-    throw new HttpsError("internal", "Unable to delete the project.", error);
+    throw new HttpsError("internal", ErrorCode.DatabaseError);
   }
 });

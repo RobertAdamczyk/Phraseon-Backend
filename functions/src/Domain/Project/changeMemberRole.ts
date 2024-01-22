@@ -1,25 +1,32 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import {Role} from "../../Model/role";
+import {verifyRole} from "../../Common/verifyRole";
+import {ErrorCode} from "../../Model/errorCode";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserRole} from "../../Common/getUserRole";
+import {Action, assertPermission} from "../../Common/assertPermission";
 
 export const changeMemberRole = onCall(async (request) => {
   logger.info("onCall changeMemberRole", request.data);
 
   const db = admin.firestore();
-  const userId = request.data.userId;
+  const userIdToChange = request.data.userId;
+  const projectId = request.data.projectId;
 
-  const projectRef = db.collection("projects").doc(request.data.projectId);
-  const memberRef = projectRef.collection("members").doc(userId);
+  const projectRef = db.collection("projects").doc(projectId);
+  const memberRef = projectRef.collection("members").doc(userIdToChange);
 
-  if (request.data.role === Role.owner) {
-    throw new HttpsError("failed-precondition", "You can't add a second project owner.");
-  }
+  const userId = verifyAuthentication(request).uid;
+  const role = await getUserRole(projectId, userId);
+  assertPermission(role, Action.changeMemberRole);
+
+  verifyRole(request.data.role);
 
   try {
     await memberRef.update({"role": request.data.role});
-    return {message: "Role updated successfully."};
+    return;
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });

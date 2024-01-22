@@ -2,33 +2,35 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import {Member} from "../../Model/member";
-import {Role} from "../../Model/role";
+import {ErrorCode} from "../../Model/errorCode";
+import {isUserProjectMember} from "../../Common/isUserProjectMember";
+import {verifyRole} from "../../Common/verifyRole";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {getUserRole} from "../../Common/getUserRole";
+import {Action, assertPermission} from "../../Common/assertPermission";
+import {getUserData} from "../../Common/getUserData";
 
 export const addProjectMember = onCall(async (request) => {
   logger.info("onCall addProjectMember", request.data);
 
   const db = admin.firestore();
-  const userId = request.data.userId;
+  const userIdToAdd = request.data.userId;
+  const projectId = request.data.projectId;
 
-  const projectRef = db.collection("projects").doc(request.data.projectId);
-  const memberRef = projectRef.collection("members").doc(userId);
+  const projectRef = db.collection("projects").doc(projectId);
+  const memberRef = projectRef.collection("members").doc(userIdToAdd);
 
-  const projectDoc = await projectRef.get();
+  const userId = verifyAuthentication(request).uid;
+  const role = await getUserRole(projectId, userId);
+  assertPermission(role, Action.addProjectMember);
 
-  if (!projectDoc.exists) {
-    throw new HttpsError("not-found", "Project not found.");
+  if (await isUserProjectMember(projectId, userIdToAdd)) {
+    throw new HttpsError("already-exists", ErrorCode.AlreadyMember);
   }
 
-  if (projectDoc.data()?.members.includes(userId)) {
-    throw new HttpsError("already-exists", "The user is already a member of the project.");
-  }
+  verifyRole(request.data.role);
 
-  if (request.data.role === Role.owner) {
-    throw new HttpsError("failed-precondition", "You can't add a second project owner.");
-  }
-
-  const userDoc = await db.collection("users").doc(userId).get();
-  const userData = userDoc.data() || {};
+  const userData = await getUserData(userIdToAdd);
 
   const member: Member = {
     role: request.data.role,
@@ -41,15 +43,15 @@ export const addProjectMember = onCall(async (request) => {
   const batch = db.batch();
 
   batch.update(projectRef, {
-    members: admin.firestore.FieldValue.arrayUnion(userId),
+    members: admin.firestore.FieldValue.arrayUnion(userIdToAdd),
   });
   batch.set(memberRef, member);
 
   try {
     await batch.commit();
-    return {message: "Document created successfully."};
+    return;
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
 

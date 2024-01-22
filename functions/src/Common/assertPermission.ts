@@ -7,6 +7,12 @@ export enum Action {
   changeContentKey = "changeContentKey",
   createKey = "createKey",
   deleteKey = "deleteKey",
+  addProjectMember = "addProjectMember",
+  changeMemberRole = "changeMemberRole",
+  changeOwner = "changeOwner",
+  deleteMember = "deleteMember",
+  deleteProject = "deleteProject",
+  leaveProject = "leaveProject",
 }
 
 type RolePermissions = {
@@ -14,11 +20,15 @@ type RolePermissions = {
 };
 
 const rolePermissions: RolePermissions = {
-  [Role.owner]: [Action.approveTranslation, Action.changeContentKey, Action.createKey, Action.deleteKey],
-  [Role.admin]: [Action.approveTranslation, Action.changeContentKey, Action.createKey, Action.deleteKey],
-  [Role.developer]: [Action.changeContentKey, Action.createKey, Action.deleteKey],
-  [Role.marketing]: [Action.approveTranslation, Action.changeContentKey],
-  [Role.viewer]: [],
+  [Role.owner]: [Action.approveTranslation, Action.changeContentKey, Action.createKey, Action.deleteKey,
+    Action.addProjectMember, Action.changeMemberRole, Action.deleteMember, Action.deleteProject, Action.changeOwner],
+
+  [Role.admin]: [Action.approveTranslation, Action.changeContentKey, Action.createKey, Action.deleteKey,
+    Action.addProjectMember, Action.changeMemberRole, Action.deleteMember, Action.leaveProject],
+
+  [Role.developer]: [Action.changeContentKey, Action.createKey, Action.deleteKey, Action.leaveProject],
+  [Role.marketing]: [Action.approveTranslation, Action.changeContentKey, Action.leaveProject],
+  [Role.viewer]: [Action.leaveProject],
 };
 
 /**
