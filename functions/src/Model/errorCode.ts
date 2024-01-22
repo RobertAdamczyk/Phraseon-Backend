@@ -6,4 +6,5 @@ export enum ErrorCode {
     UserUnauthenticated = "USER_UNAUTHENTICATED",
     DatabaseError = "DATABASE_ERROR",
     InvalidKeyID = "INVALID_KEY_ID",
+    KeyAlreadyExists = "KEY_ALREADY_EXISTS",
 }

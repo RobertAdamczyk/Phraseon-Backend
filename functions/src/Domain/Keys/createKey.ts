@@ -2,6 +2,11 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import {KeyStatus} from "../../Model/keyStatus";
+import {verifyKeyId} from "../../Common/verifyKeyId";
+import {getUserRole} from "../../Common/getUserRole";
+import {verifyAuthentication} from "../../Common/verifyAuthentication";
+import {Action, assertPermission} from "../../Common/assertPermission";
+import {ErrorCode} from "../../Model/errorCode";
 
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
@@ -10,9 +15,10 @@ export const createKey = onCall(async (request) => {
   const translation = request.data.translation;
   const language = request.data.language;
 
-  if (!keyId) {
-    throw new HttpsError("invalid-argument", "Invalid key ID.");
-  }
+  verifyKeyId(keyId);
+  const userId = verifyAuthentication(request).uid;
+  const role = await getUserRole(projectId, userId);
+  assertPermission(role, Action.createKey);
 
   const documentRef = admin.firestore().collection("projects").doc(projectId).collection("keys").doc(keyId);
 
@@ -26,12 +32,12 @@ export const createKey = onCall(async (request) => {
   try {
     const doc = await documentRef.get();
     if (doc.exists) {
-      throw new HttpsError("already-exists", "Phrase with the provided key ID already exists.");
+      throw new HttpsError("already-exists", ErrorCode.KeyAlreadyExists);
     } else {
       await documentRef.set(newDoc);
-      return {message: "Document created successfully."};
+      return;
     }
   } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+    throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
