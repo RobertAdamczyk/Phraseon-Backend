@@ -32,4 +32,3 @@ export const approveTranslation = onCall(async (request) => {
     throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
-
