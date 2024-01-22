@@ -5,6 +5,7 @@ import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
+import {verifyKeyId} from "../../Common/verifyKeyId";
 
 export const changeContentKey = onCall(async (request) => {
   logger.info("onCall changeContentKey", request.data);
@@ -14,9 +15,7 @@ export const changeContentKey = onCall(async (request) => {
   const language = request.data.language;
   const db = admin.firestore();
 
-  if (!keyId) {
-    throw new HttpsError("invalid-argument", ErrorCode.InvalidKeyID);
-  }
+  verifyKeyId(keyId);
 
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);
