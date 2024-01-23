@@ -3,7 +3,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import * as deepl from "deepl-node";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
-import {Language} from "../../Model/Language";
+import {Language} from "../../Model/language";
 import {KeyStatus} from "../../Model/keyStatus";
 
 export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}", async (event) => {
@@ -40,21 +40,17 @@ export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}"
 
   const translator = new deepl.Translator(deepLApiKey);
 
-  try {
-    for (const language of languagesToTranslate) {
-      const sourceLanguage = baseLanguage.split("-")[0] as deepl.SourceLanguageCode;
-      const targetLanguage = language as deepl.TargetLanguageCode;
-      const result = await translator.translateText(textToTranslation, sourceLanguage, targetLanguage);
-      const translationField = "translation." + language;
-      const statusField = "status." + language;
-      const deeplResult = result as deepl.TextResult;
-      await keyRef.update({
-        [translationField]: deeplResult.text,
-        [statusField]: KeyStatus.review,
-      });
-    }
-  } catch (error) {
-    throw new HttpsError("unknown", "An error occurred while processing your request.", error);
+  for (const language of languagesToTranslate) {
+    const sourceLanguage = baseLanguage.split("-")[0] as deepl.SourceLanguageCode;
+    const targetLanguage = language as deepl.TargetLanguageCode;
+    const result = await translator.translateText(textToTranslation, sourceLanguage, targetLanguage);
+    const translationField = "translation." + language;
+    const statusField = "status." + language;
+    const deeplResult = result as deepl.TextResult;
+    await keyRef.update({
+      [translationField]: deeplResult.text,
+      [statusField]: KeyStatus.review,
+    });
   }
   return;
 });
