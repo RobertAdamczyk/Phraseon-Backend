@@ -13,6 +13,9 @@ export enum Action {
   deleteMember = "deleteMember",
   deleteProject = "deleteProject",
   leaveProject = "leaveProject",
+  setBaseLanguage = "setBaseLanguage",
+  setProjectLanguages = "setProjectLanguages",
+  setProjectTechnologies = "setProjectTechnologies",
 }
 
 type RolePermissions = {
@@ -21,10 +24,12 @@ type RolePermissions = {
 
 const rolePermissions: RolePermissions = {
   [Role.owner]: [Action.approveTranslation, Action.changeContentKey, Action.createKey, Action.deleteKey,
-    Action.addProjectMember, Action.changeMemberRole, Action.deleteMember, Action.deleteProject, Action.changeOwner],
+    Action.addProjectMember, Action.changeMemberRole, Action.deleteMember, Action.deleteProject, Action.changeOwner,
+    Action.setBaseLanguage, Action.setProjectLanguages, Action.setProjectTechnologies],
 
   [Role.admin]: [Action.approveTranslation, Action.changeContentKey, Action.createKey, Action.deleteKey,
-    Action.addProjectMember, Action.changeMemberRole, Action.deleteMember, Action.leaveProject],
+    Action.addProjectMember, Action.changeMemberRole, Action.deleteMember, Action.leaveProject,
+    Action.setBaseLanguage, Action.setProjectLanguages, Action.setProjectTechnologies],
 
   [Role.developer]: [Action.changeContentKey, Action.createKey, Action.deleteKey, Action.leaveProject],
   [Role.marketing]: [Action.approveTranslation, Action.changeContentKey, Action.leaveProject],
