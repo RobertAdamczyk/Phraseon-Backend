@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@apple/app-store-server-library": "^1.0.1",
-    "deepl-node": "^1.11.0"
+    "deepl-node": "^1.11.0",
+    "uuid": "^9.0.1"
   }
 }
