@@ -23,7 +23,7 @@ export const getKeys = onRequest(async (request, response) => {
 
   try {
     const projectRef = db.collection("projects").doc(projectId);
-  
+
     const isProjectMember = await isUserProjectMember(projectId, userAccessKey);
     if (!isProjectMember) {
       response.status(403).send(ErrorCode.PermissionDenied);
