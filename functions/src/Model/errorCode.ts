@@ -12,4 +12,6 @@ export enum ErrorCode {
     CannotDeleteSelf = "CAN_NOT_DELETE_SELF",
     LanguageNotValid = "LANGUAGE_NOT_VALID",
     TechnologyNotValid = "TECHNOLOGY_NOT_VALID",
+    AccessExpired = "ACCESS_EXPIRED",
+    AccessDenied = "ACCESS_DENIED",
 }
