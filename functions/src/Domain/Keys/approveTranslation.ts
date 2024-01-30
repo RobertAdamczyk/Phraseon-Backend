@@ -7,6 +7,8 @@ import {getUserRole} from "../../Common/getUserRole";
 import {assertPermission, Action} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyLanguage} from "../../Common/verifyLanguage";
+import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
+import {checkProjectOwnerGoldSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
 
 export const approveTranslation = onCall(async (request) => {
   logger.info("onCall approveTranslation", request.data);
@@ -20,6 +22,10 @@ export const approveTranslation = onCall(async (request) => {
 
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.approveTranslation);
+
+  const projectOwnerId = await getProjectOwnerId(projectId);
+  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
+  checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
   const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 

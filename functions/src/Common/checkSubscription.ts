@@ -44,3 +44,23 @@ export async function checkUserSubscription(userId: string): Promise<Subscriptio
 
   return userSubscriptionPlan;
 }
+
+/**
+ * Checks if the project owner has a GOLD subscription plan, and if the requesting user is the project owner.
+ *
+ * This function compares the provided projectOwnerId with the userId to
+ * determine if the user making the request is the project owner.
+ * It then checks if the project owner's subscription plan is GOLD.
+ *
+ * @param {string} userId - The unique identifier of the user making the request.
+ * @param {string} projectOwnerId - The unique identifier of the project owner.
+ * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan of the project owner.
+ * @throws {HttpsError} - Throws 'not-found' error with ErrorCode.AccessExpired if the user is not the project
+ *                        owner or if the project owner does not have a GOLD subscription plan.
+ */
+export function checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId: string, projectOwnerId: string,
+  projectOwnerSubscriptionPlan: SubscriptionPlan) {
+  if (projectOwnerId != userId && projectOwnerSubscriptionPlan != SubscriptionPlan.gold) {
+    throw new HttpsError("not-found", ErrorCode.AccessExpired);
+  }
+}

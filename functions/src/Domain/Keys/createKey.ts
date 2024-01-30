@@ -8,9 +8,8 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyLanguage} from "../../Common/verifyLanguage";
-import {checkUserSubscription} from "../../Common/checkSubscription";
+import {checkUserSubscription, checkProjectOwnerGoldSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {SubscriptionPlan} from "../../Model/subscriptionPlan";
 
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
@@ -26,9 +25,7 @@ export const createKey = onCall(async (request) => {
   assertPermission(role, Action.createKey);
   const projectOwnerId = await getProjectOwnerId(projectId);
   const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  if (projectOwnerId != userId && projectOwnerSubscriptionPlan != SubscriptionPlan.gold) {
-    throw new HttpsError("not-found", ErrorCode.AccessExpired);
-  }
+  checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
   const documentRef = admin.firestore().collection("projects").doc(projectId).collection("keys").doc(keyId);
 
