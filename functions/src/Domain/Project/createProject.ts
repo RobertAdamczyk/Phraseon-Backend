@@ -8,6 +8,8 @@ import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserData} from "../../Common/getUserData";
 import {verifyLanguage, verifyLanguages} from "../../Common/verifyLanguage";
+import {checkUserSubscription} from "../../Common/checkSubscription";
+import {SubscriptionPlan} from "../../Model/subscriptionPlan";
 
 export const createProject = onCall(async (request) => {
   logger.info("onCall createProject", request.data);
@@ -20,6 +22,11 @@ export const createProject = onCall(async (request) => {
   verifyLanguage(baseLanguage);
   const userId = verifyAuthentication(request).uid;
   const userData = await getUserData(userId);
+  const subscriptionPlan = await checkUserSubscription(userId);
+  const userProjects = await db.collection("projects").where("owner", "==", userId).get(); // check projects count
+  if (subscriptionPlan != SubscriptionPlan.gold && userProjects.docs.length >= 5) {
+    throw new HttpsError("not-found", ErrorCode.ProjectCreationLimit);
+  }
 
   const batch = db.batch();
 

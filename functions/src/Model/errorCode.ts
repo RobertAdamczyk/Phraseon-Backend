@@ -14,4 +14,5 @@ export enum ErrorCode {
     TechnologyNotValid = "TECHNOLOGY_NOT_VALID",
     AccessExpired = "ACCESS_EXPIRED",
     AccessDenied = "ACCESS_DENIED",
+    ProjectCreationLimit = "PROJECT_CREATION_LIMIT",
 }
