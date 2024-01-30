@@ -46,21 +46,32 @@ export async function checkUserSubscription(userId: string): Promise<Subscriptio
 }
 
 /**
- * Checks if the project owner has a GOLD subscription plan, and if the requesting user is the project owner.
+ * Checks if the project owner has a GOLD subscription, only if the user making the request is not the project owner.
  *
- * This function compares the provided projectOwnerId with the userId to
- * determine if the user making the request is the project owner.
- * It then checks if the project owner's subscription plan is GOLD.
+ * This function first checks if the user making the request is different from the project owner.
+ * If so, it then calls `checkProjectOwnerGoldSubscriptionPlan` to ensure the project owner has a GOLD subscription.
  *
  * @param {string} userId - The unique identifier of the user making the request.
  * @param {string} projectOwnerId - The unique identifier of the project owner.
  * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan of the project owner.
- * @throws {HttpsError} - Throws 'not-found' error with ErrorCode.AccessExpired if the user is not the project
- *                        owner or if the project owner does not have a GOLD subscription plan.
  */
 export function checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId: string, projectOwnerId: string,
   projectOwnerSubscriptionPlan: SubscriptionPlan) {
-  if (projectOwnerId != userId && projectOwnerSubscriptionPlan != SubscriptionPlan.gold) {
+  if (projectOwnerId != userId) {
+    checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan);
+  }
+}
+
+/**
+ * Verifies if the provided subscription plan is GOLD.
+ *
+ * This function throws an error if the provided subscription plan is not GOLD.
+ *
+ * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan to check.
+ * @throws {HttpsError} - Throws 'not-found' error with ErrorCode.AccessExpired if the subscription plan is not GOLD.
+ */
+export function checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan: SubscriptionPlan) {
+  if (projectOwnerSubscriptionPlan != SubscriptionPlan.gold) {
     throw new HttpsError("not-found", ErrorCode.AccessExpired);
   }
 }

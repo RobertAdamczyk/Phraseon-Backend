@@ -9,6 +9,8 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {getUserData} from "../../Common/getUserData";
+import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
+import {checkProjectOwnerGoldSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
 
 export const addProjectMember = onCall(async (request) => {
   logger.info("onCall addProjectMember", request.data);
@@ -23,6 +25,10 @@ export const addProjectMember = onCall(async (request) => {
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.addProjectMember);
+
+  const projectOwnerId = await getProjectOwnerId(projectId);
+  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
+  checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan);
 
   if (await isUserProjectMember(projectId, userIdToAdd)) {
     throw new HttpsError("already-exists", ErrorCode.AlreadyMember);

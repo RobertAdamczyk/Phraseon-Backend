@@ -5,6 +5,8 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
+import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
+import {checkProjectOwnerGoldSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
 
 export const setProjectLanguages = onCall(async (request) => {
   logger.info("onCall setProjectLanguages", request.data);
@@ -16,6 +18,10 @@ export const setProjectLanguages = onCall(async (request) => {
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.setProjectLanguages);
+
+  const projectOwnerId = await getProjectOwnerId(projectId);
+  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
+  checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
   const projectRef = db.collection("projects").doc(projectId);
 
