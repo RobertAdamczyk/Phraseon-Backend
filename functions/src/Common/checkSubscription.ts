@@ -1,38 +1,8 @@
 import * as admin from "firebase-admin";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
-import {logger} from "firebase-functions/v1";
 import {Timestamp} from "firebase-admin/firestore";
 import {SubscriptionPlan} from "../Model/subscriptionPlan";
-
-/**
- * Checks the subscription status of a project's owner.
- *
- * Retrieves the project using the provided projectId, then fetches the owner's ID from the project data.
- * Calls checkUserSubscription to determine the subscription status of the project owner.
- *
- * @param {string} projectId - The unique identifier of the project.
- * @return {Promise<SubscriptionPlan>} - Promise resolving to the SubscriptionPlan of the project owner.
- * @throws {HttpsError} - Throws error with ErrorCode.ProjectNotFound if the project does not exist.
- *                        Throws error with ErrorCode.DatabaseError if the owner ID is missing.
- */
-export async function checkProjectOwnerSubscription(projectId: string): Promise<SubscriptionPlan> {
-  const db = admin.firestore();
-  const projectRef = db.collection("projects").doc(projectId);
-  const doc = await projectRef.get();
-
-  if (!doc.exists) {
-    throw new HttpsError("not-found", ErrorCode.ProjectNotFound);
-  }
-
-  const projectData = doc.data();
-  const ownerId = projectData?.owner;
-  if (!ownerId) {
-    throw new HttpsError("not-found", ErrorCode.DatabaseError);
-  }
-
-  return await checkUserSubscription(ownerId);
-}
 
 /**
  * Checks the subscription status of a user.
