@@ -72,6 +72,6 @@ export function checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId: string,
  */
 export function checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan: SubscriptionPlan) {
   if (projectOwnerSubscriptionPlan != SubscriptionPlan.gold) {
-    throw new HttpsError("not-found", ErrorCode.AccessExpired);
+    throw new HttpsError("not-found", ErrorCode.AccessDenied);
   }
 }
