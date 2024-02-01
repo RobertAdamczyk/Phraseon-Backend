@@ -6,7 +6,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkUserSubscription, checkProjectOwnerGoldSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
+import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
 
 export const deleteKey = onCall(async (request) => {
   logger.info("onCall deleteKey", request.data);
@@ -21,7 +21,7 @@ export const deleteKey = onCall(async (request) => {
 
   const projectOwnerId = await getProjectOwnerId(projectId);
   const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
   const keyRefToDelete = projectRef.collection("keys").doc(keyIdToDelete);
 

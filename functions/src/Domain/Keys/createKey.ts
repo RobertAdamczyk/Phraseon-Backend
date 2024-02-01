@@ -8,7 +8,7 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyLanguage} from "../../Common/verifyLanguage";
-import {checkUserSubscription, checkProjectOwnerGoldSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
+import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 
 export const createKey = onCall(async (request) => {
@@ -25,7 +25,7 @@ export const createKey = onCall(async (request) => {
   assertPermission(role, Action.createKey);
   const projectOwnerId = await getProjectOwnerId(projectId);
   const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
   const documentRef = admin.firestore().collection("projects").doc(projectId).collection("keys").doc(keyId);
 

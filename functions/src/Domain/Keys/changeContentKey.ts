@@ -8,7 +8,7 @@ import {Action, assertPermission} from "../../Common/assertPermission";
 import {verifyKeyId} from "../../Common/verifyKeyId";
 import {verifyLanguage} from "../../Common/verifyLanguage";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerGoldSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
 
 export const changeContentKey = onCall(async (request) => {
   logger.info("onCall changeContentKey", request.data);
@@ -27,7 +27,7 @@ export const changeContentKey = onCall(async (request) => {
 
   const projectOwnerId = await getProjectOwnerId(projectId);
   const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
   const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 
