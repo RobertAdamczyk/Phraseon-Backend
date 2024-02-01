@@ -30,6 +30,7 @@ export * from "./Domain/Keys/getKeys";
 export * from "./Domain/Keys/deleteKey";
 export * from "./Domain/Keys/approveTranslation";
 export * from "./Domain/User/notifySubscriptionChange";
+export * from "./Domain/User/startTrial";
 
 admin.initializeApp();
 admin.firestore().settings({ignoreUndefinedProperties: true});
