@@ -1,4 +1,4 @@
 export enum SubscriptionPlan {
-  basic = "robert.adamczyk.phrasify.inhouse.subscription.basic",
-  gold = "robert.adamczyk.phrasify.inhouse.subscription.gold",
+  individual = "robert.adamczyk.phrasify.inhouse.subscription.individual",
+  team = "robert.adamczyk.phrasify.inhouse.subscription.team",
 }

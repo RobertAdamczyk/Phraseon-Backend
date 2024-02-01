@@ -46,32 +46,32 @@ export async function checkUserSubscription(userId: string): Promise<Subscriptio
 }
 
 /**
- * Checks if the project owner has a GOLD subscription, only if the user making the request is not the project owner.
+ * Checks if the project owner has a Team subscription, only if the user making the request is not the project owner.
  *
  * This function first checks if the user making the request is different from the project owner.
- * If so, it then calls `checkProjectOwnerGoldSubscriptionPlan` to ensure the project owner has a GOLD subscription.
+ * If so, it then calls `checkProjectOwnerTeamSubscriptionPlan` to ensure the project owner has a Team subscription.
  *
  * @param {string} userId - The unique identifier of the user making the request.
  * @param {string} projectOwnerId - The unique identifier of the project owner.
  * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan of the project owner.
  */
-export function checkProjectOwnerGoldSubscriptionPlanIfNecessary(userId: string, projectOwnerId: string,
+export function checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId: string, projectOwnerId: string,
   projectOwnerSubscriptionPlan: SubscriptionPlan) {
   if (projectOwnerId != userId) {
-    checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan);
+    checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan);
   }
 }
 
 /**
- * Verifies if the provided subscription plan is GOLD.
+ * Verifies if the provided subscription plan is Team.
  *
- * This function throws an error if the provided subscription plan is not GOLD.
+ * This function throws an error if the provided subscription plan is not Team.
  *
  * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan to check.
- * @throws {HttpsError} - Throws 'not-found' error with ErrorCode.AccessExpired if the subscription plan is not GOLD.
+ * @throws {HttpsError} - Throws 'not-found' error with ErrorCode.AccessExpired if the subscription plan is not Team.
  */
-export function checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan: SubscriptionPlan) {
-  if (projectOwnerSubscriptionPlan != SubscriptionPlan.gold) {
+export function checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan: SubscriptionPlan) {
+  if (projectOwnerSubscriptionPlan != SubscriptionPlan.team) {
     throw new HttpsError("not-found", ErrorCode.AccessDenied);
   }
 }

@@ -10,7 +10,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {getUserData} from "../../Common/getUserData";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerGoldSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkProjectOwnerTeamSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
 
 export const addProjectMember = onCall(async (request) => {
   logger.info("onCall addProjectMember", request.data);
@@ -28,7 +28,7 @@ export const addProjectMember = onCall(async (request) => {
 
   const projectOwnerId = await getProjectOwnerId(projectId);
   const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerGoldSubscriptionPlan(projectOwnerSubscriptionPlan);
+  checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan);
 
   if (await isUserProjectMember(projectId, userIdToAdd)) {
     throw new HttpsError("already-exists", ErrorCode.AlreadyMember);

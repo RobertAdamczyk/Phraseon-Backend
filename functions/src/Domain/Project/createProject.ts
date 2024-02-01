@@ -24,7 +24,7 @@ export const createProject = onCall(async (request) => {
   const userData = await getUserData(userId);
   const subscriptionPlan = await checkUserSubscription(userId);
   const userProjects = await db.collection("projects").where("owner", "==", userId).get(); // check projects count
-  if (subscriptionPlan != SubscriptionPlan.gold && userProjects.docs.length >= 5) {
+  if (subscriptionPlan != SubscriptionPlan.team && userProjects.docs.length >= 5) {
     throw new HttpsError("not-found", ErrorCode.ProjectCreationLimit);
   }
 
