@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "phrasify-inhouse"
+    "default": "phrasify-inhouse",
+    "live": "phrasify-live"
   }
 }

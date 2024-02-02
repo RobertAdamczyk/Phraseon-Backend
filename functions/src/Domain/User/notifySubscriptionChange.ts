@@ -5,17 +5,20 @@ import * as os from "os";
 import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
-import {Environment, NotificationTypeV2, SignedDataVerifier, Subtype} from "@apple/app-store-server-library";
+import {NotificationTypeV2, SignedDataVerifier, Subtype} from "@apple/app-store-server-library";
 import {SubscriptionStatus} from "../../Model/subscriptionStatus";
+import {getEnvironment} from "../../Common/getEnvironment";
 
 export const notifySubscriptionChange = onRequest(async (request, response) => {
   logger.info("Start of notifySubscriptionChange");
 
-  const bundleId = "robert.adamczyk.phrasify.inhouse";
+  const projectEnvironment = getEnvironment();
   const appleRootCAs: Buffer[] = await loadAppleRootCAs();
   const enableOnlineChecks = true;
-  const environment = Environment.SANDBOX;
-  const verifier = new SignedDataVerifier(appleRootCAs, enableOnlineChecks, environment, bundleId);
+  const verifier = new SignedDataVerifier(
+    appleRootCAs, enableOnlineChecks,
+    projectEnvironment.environment, projectEnvironment.bundleId
+  );
   const db = admin.firestore();
 
   const notificationPayload = request.body.signedPayload;
@@ -65,7 +68,7 @@ export const notifySubscriptionChange = onRequest(async (request, response) => {
  */
 async function loadAppleRootCAs(): Promise<Buffer[]> {
   const storage = new Storage();
-  const bucketName = "phrasify-inhouse.appspot.com";
+  const projectEnvironment = getEnvironment();
   const certificateNames = [
     "AppleIncRootCertificate.cer",
     "AppleComputerRootCertificate.cer",
@@ -78,7 +81,7 @@ async function loadAppleRootCAs(): Promise<Buffer[]> {
       const tempFilePath = path.join(os.tmpdir(), certificateName);
 
       // Downloads the certificate file
-      await storage.bucket(bucketName).file("Certificates/" + certificateName).download({
+      await storage.bucket(projectEnvironment.bucketName).file("Certificates/" + certificateName).download({
         destination: tempFilePath,
       });
 
