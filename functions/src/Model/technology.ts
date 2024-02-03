@@ -1,4 +1,4 @@
 export enum Technology {
     swift = "SWIFT",
-    kotlin = "KOTLIN",
+    // kotlin = "KOTLIN",
 }
