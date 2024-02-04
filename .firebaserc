@@ -1,6 +1,8 @@
 {
   "projects": {
-    "default": "phrasify-inhouse",
-    "live": "phrasify-live"
-  }
+    "live": "phraseon-live",
+    "inhouse": "phraseon-inhouse"
+  },
+  "targets": {},
+  "etags": {}
 }
