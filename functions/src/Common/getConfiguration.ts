@@ -1,6 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {ErrorCode} from "../Model/errorCode";
-import {Environment} from "@apple/app-store-server-library";
 
 /**
  * Retrieves the ProjectConfiguration based on the Firebase project ID.
@@ -18,7 +17,6 @@ export function getConfiguration(): ProjectConfiguration {
     const environment: ProjectConfiguration = {
       bundleId: BundleId.inhouse,
       bucketName: BucketName.inhouse,
-      environment: Environment.SANDBOX,
       build: Build.inhouse,
     };
     return environment;
@@ -26,7 +24,6 @@ export function getConfiguration(): ProjectConfiguration {
     const environment: ProjectConfiguration = {
       bundleId: BundleId.live,
       bucketName: BucketName.live,
-      environment: Environment.PRODUCTION,
       build: Build.live,
     };
     return environment;
@@ -37,7 +34,6 @@ export function getConfiguration(): ProjectConfiguration {
 interface ProjectConfiguration {
     bundleId: string;
     bucketName: string;
-    environment: Environment;
     build: Build;
 }
 

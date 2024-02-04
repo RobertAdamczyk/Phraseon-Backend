@@ -5,25 +5,53 @@ import * as os from "os";
 import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
-import {NotificationTypeV2, SignedDataVerifier, Subtype} from "@apple/app-store-server-library";
+import {Environment, NotificationTypeV2, SignedDataVerifier, Subtype} from "@apple/app-store-server-library";
 import {SubscriptionStatus} from "../../Model/subscriptionStatus";
 import {getConfiguration} from "../../Common/getConfiguration";
 
-export const notifySubscriptionChange = onRequest(async (request, response) => {
-  logger.info("Start of notifySubscriptionChange");
-
+/**
+ * Handles subscription change notifications in the Production environment.
+ * Initializes a verifier with production parameters and processes the notification.
+ *
+ * @param {Request} request The request object from the HTTP trigger.
+ * @param {Response} response The response object to send back the HTTP response.
+ */
+export const notifySubscriptionChangeProduction = onRequest(async (request, response) => {
+  logger.info("Start of notifySubscriptionChange in Production environment");
   const projectEnvironment = getConfiguration();
   const appleRootCAs: Buffer[] = await loadAppleRootCAs();
-  const enableOnlineChecks = true;
-  const verifier = new SignedDataVerifier(
-    appleRootCAs, enableOnlineChecks,
-    projectEnvironment.environment, projectEnvironment.bundleId
-  );
+  const verifier = new SignedDataVerifier(appleRootCAs, true, Environment.PRODUCTION, projectEnvironment.bundleId);
+
+  await processNotification(verifier, request.body.signedPayload);
+  response.status(200).send("OK");
+});
+
+/**
+ * Handles subscription change notifications in the Sandbox environment.
+ * Initializes a verifier with sandbox parameters and processes the notification.
+ *
+ * @param {Request} request The request object from the HTTP trigger.
+ * @param {Response} response The response object to send back the HTTP response.
+ */
+export const notifySubscriptionChangeSandbox = onRequest(async (request, response) => {
+  logger.info("Start of notifySubscriptionChange in Sandbox environment");
+  const projectEnvironment = getConfiguration();
+  const appleRootCAs: Buffer[] = await loadAppleRootCAs();
+  const verifier = new SignedDataVerifier(appleRootCAs, true, Environment.SANDBOX, projectEnvironment.bundleId);
+
+  await processNotification(verifier, request.body.signedPayload);
+  response.status(200).send("OK");
+});
+
+/**
+ * Processes the verified notification payload to update the user's subscription status in Firestore.
+ *
+ * @param {SignedDataVerifier} verifier The verifier instance to decode and verify the notification.
+ * @param {string} signedPayload The signed payload from the request body to be verified and processed.
+ */
+async function processNotification(verifier: SignedDataVerifier, signedPayload: string) {
   const db = admin.firestore();
-
-  const notificationPayload = request.body.signedPayload;
-
-  const verifiedNotification = await verifier.verifyAndDecodeNotification(notificationPayload);
+  const verifiedNotification = await verifier.verifyAndDecodeNotification(signedPayload);
   logger.info("verifiedNotification", verifiedNotification);
   if (verifiedNotification?.data?.signedTransactionInfo) {
     const signedTransactionInfo = await verifier.verifyAndDecodeTransaction(
@@ -59,8 +87,7 @@ export const notifySubscriptionChange = onRequest(async (request, response) => {
       logger.info("No user found.");
     }
   }
-  response.status(200).send("OK");
-});
+}
 
 /**
  * Loads the specified Apple Root CA certificates from Google Cloud Storage.
