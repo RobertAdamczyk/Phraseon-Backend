@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
-import {SubscriptionPlan} from "../Model/subscriptionPlan";
+import {SubscriptionPlanValue, SubscriptionPlan} from "../Model/subscriptionPlan";
 
 /**
  * Checks the subscription status of a user.
@@ -11,12 +11,12 @@ import {SubscriptionPlan} from "../Model/subscriptionPlan";
  * the 'subscriptionValidUntil' field. Returns the user's subscription plan.
  *
  * @param {string} userId - The unique identifier of the user.
- * @return {Promise<SubscriptionPlan>} - Promise resolving to the SubscriptionPlan of the user.
+ * @return {Promise<SubscriptionPlanValue>} - Promise resolving to the SubscriptionPlanValue of the user.
  * @throws {HttpsError} - Throws error with ErrorCode.DatabaseError if the user does not exist.
  *                        Throws error with ErrorCode.AccessDenied if subscription data is missing or invalid.
  *                        Throws error with ErrorCode.AccessExpired if the subscription has expired.
  */
-export async function checkUserSubscription(userId: string): Promise<SubscriptionPlan> {
+export async function checkUserSubscription(userId: string): Promise<SubscriptionPlanValue> {
   const db = admin.firestore();
 
   const userDoc = await db.collection("users").doc(userId).get();
@@ -56,7 +56,7 @@ export async function checkUserSubscription(userId: string): Promise<Subscriptio
  * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan of the project owner.
  */
 export function checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId: string, projectOwnerId: string,
-  projectOwnerSubscriptionPlan: SubscriptionPlan) {
+  projectOwnerSubscriptionPlan: SubscriptionPlanValue) {
   if (projectOwnerId != userId) {
     checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan);
   }
@@ -70,8 +70,8 @@ export function checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId: string,
  * @param {SubscriptionPlan} projectOwnerSubscriptionPlan - The subscription plan to check.
  * @throws {HttpsError} - Throws 'not-found' error with ErrorCode.AccessExpired if the subscription plan is not Team.
  */
-export function checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan: SubscriptionPlan) {
-  if (projectOwnerSubscriptionPlan != SubscriptionPlan.team) {
+export function checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan: SubscriptionPlanValue) {
+  if (projectOwnerSubscriptionPlan != SubscriptionPlan.current.team) {
     throw new HttpsError("not-found", ErrorCode.AccessDenied);
   }
 }

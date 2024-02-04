@@ -7,12 +7,12 @@ import * as fs from "fs";
 import * as path from "path";
 import {NotificationTypeV2, SignedDataVerifier, Subtype} from "@apple/app-store-server-library";
 import {SubscriptionStatus} from "../../Model/subscriptionStatus";
-import {getEnvironment} from "../../Common/getEnvironment";
+import {getConfiguration} from "../../Common/getConfiguration";
 
 export const notifySubscriptionChange = onRequest(async (request, response) => {
   logger.info("Start of notifySubscriptionChange");
 
-  const projectEnvironment = getEnvironment();
+  const projectEnvironment = getConfiguration();
   const appleRootCAs: Buffer[] = await loadAppleRootCAs();
   const enableOnlineChecks = true;
   const verifier = new SignedDataVerifier(
@@ -68,7 +68,7 @@ export const notifySubscriptionChange = onRequest(async (request, response) => {
  */
 async function loadAppleRootCAs(): Promise<Buffer[]> {
   const storage = new Storage();
-  const projectEnvironment = getEnvironment();
+  const projectEnvironment = getConfiguration();
   const certificateNames = [
     "AppleIncRootCertificate.cer",
     "AppleComputerRootCertificate.cer",
