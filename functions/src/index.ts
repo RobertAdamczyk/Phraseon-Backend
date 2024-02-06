@@ -12,6 +12,7 @@ export * from "./Domain/User/isUserProjectOwner";
 export * from "./Domain/User/onUserCreate";
 export * from "./Domain/User/onUserDelete";
 export * from "./Domain/User/onUserDataUpdate";
+export * from "./Domain/Keys/updateAlgoliaIndex";
 export * from "./Domain/Keys/createKey";
 export * from "./Domain/Keys/changeContentKey";
 export * from "./Domain/Project/createProject";
