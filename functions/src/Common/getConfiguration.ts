@@ -18,6 +18,8 @@ export function getConfiguration(): ProjectConfiguration {
       bundleId: BundleId.inhouse,
       bucketName: BucketName.inhouse,
       build: Build.inhouse,
+      algoliaAppId: process.env.ALGOLIA_APP_ID_INHOUSE,
+      algoliaAdminKey: process.env.ALGOLIA_ADMIN_KEY_INHOUSE,
     };
     return environment;
   } else if (projectId === ProjectId.live) {
@@ -25,6 +27,8 @@ export function getConfiguration(): ProjectConfiguration {
       bundleId: BundleId.live,
       bucketName: BucketName.live,
       build: Build.live,
+      algoliaAppId: process.env.ALGOLIA_APP_ID_LIVE,
+      algoliaAdminKey: process.env.ALGOLIA_ADMIN_KEY_LIVE,
     };
     return environment;
   }
@@ -35,6 +39,8 @@ interface ProjectConfiguration {
     bundleId: string;
     bucketName: string;
     build: Build;
+    algoliaAppId: string | undefined;
+    algoliaAdminKey: string | undefined,
 }
 
 enum Build {

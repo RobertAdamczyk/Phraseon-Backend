@@ -1,13 +1,15 @@
 import * as functions from "firebase-functions";
 import algoliasearch from "algoliasearch";
+import {getConfiguration} from "../../Common/getConfiguration";
 
 export const updateAlgoliaIndex = functions.firestore
   .document("projects/{projectId}/keys/{keyId}")
   .onWrite(async (change, context) => {
     const projectId = context.params.projectId;
 
-    const appId = process.env.ALGOLIA_APP_ID;
-    const adminKey = process.env.ALGOLIA_ADMIN_KEY;
+    const configuration = getConfiguration();
+    const appId = configuration.algoliaAppId;
+    const adminKey = configuration.algoliaAdminKey;
 
     if (appId === undefined || appId === null) {
       return;
@@ -26,6 +28,7 @@ export const updateAlgoliaIndex = functions.firestore
 
     const algoliaObject = {
       objectID: context.params.keyId,
+      keyId: context.params.keyId,
       ...document,
     };
 
