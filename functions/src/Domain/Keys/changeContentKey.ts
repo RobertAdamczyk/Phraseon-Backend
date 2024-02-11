@@ -9,6 +9,7 @@ import {verifyKeyId} from "../../Common/verifyKeyId";
 import {verifyLanguage} from "../../Common/verifyLanguage";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {verifyPhraseContentLength} from "../../Common/verifyPhraseContentLength";
 
 export const changeContentKey = onCall(async (request) => {
   logger.info("onCall changeContentKey", request.data);
@@ -18,6 +19,7 @@ export const changeContentKey = onCall(async (request) => {
   const language = request.data.language;
   const db = admin.firestore();
 
+  verifyPhraseContentLength(translation);
   verifyKeyId(keyId);
   verifyLanguage(language);
 

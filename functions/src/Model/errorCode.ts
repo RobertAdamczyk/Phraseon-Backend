@@ -15,4 +15,5 @@ export enum ErrorCode {
     AccessExpired = "ACCESS_EXPIRED",
     AccessDenied = "ACCESS_DENIED",
     ProjectCreationLimit = "PROJECT_CREATION_LIMIT",
+    PhraseContentTooLong = "PHRASE_CONTENT_TOO_LONG",
 }

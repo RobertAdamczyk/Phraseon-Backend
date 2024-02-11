@@ -10,6 +10,7 @@ import {ErrorCode} from "../../Model/errorCode";
 import {verifyLanguage} from "../../Common/verifyLanguage";
 import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
+import {verifyPhraseContentLength} from "../../Common/verifyPhraseContentLength";
 
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
@@ -18,6 +19,7 @@ export const createKey = onCall(async (request) => {
   const translation = request.data.translation;
   const language = request.data.language;
 
+  verifyPhraseContentLength(translation);
   verifyLanguage(language);
   verifyKeyId(keyId);
   const userId = verifyAuthentication(request).uid;
