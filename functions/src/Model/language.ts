@@ -4,7 +4,7 @@ export enum Language {
     Danish = "DA",
     German = "DE",
     Greek = "EL",
-    EnglishAmerican = "EN-US",
+    English = "EN-US",
     Spanish = "ES",
     Finnish = "FI",
     French = "FR",
