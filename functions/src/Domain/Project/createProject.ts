@@ -10,16 +10,19 @@ import {getUserData} from "../../Common/getUserData";
 import {verifyLanguage, verifyLanguages} from "../../Common/verifyLanguage";
 import {checkUserSubscription} from "../../Common/checkSubscription";
 import {SubscriptionPlan} from "../../Model/subscriptionPlan";
+import {verifyTechnologies} from "../../Common/verifyTechnology";
 
 export const createProject = onCall(async (request) => {
   logger.info("onCall createProject", request.data);
 
   const db = admin.firestore();
   const languages = request.data.languages;
+  const technologies = request.data.technologies;
   const baseLanguage = request.data.baseLanguage;
 
   verifyLanguages(languages);
   verifyLanguage(baseLanguage);
+  verifyTechnologies(technologies);
   const userId = verifyAuthentication(request).uid;
   const userData = await getUserData(userId);
   const subscriptionPlan = await checkUserSubscription(userId);
@@ -33,7 +36,7 @@ export const createProject = onCall(async (request) => {
   const projectRef = db.collection("projects").doc();
   const project: Project = {
     name: request.data.name,
-    technologies: request.data.technologies,
+    technologies: technologies,
     languages: languages,
     baseLanguage: baseLanguage,
     members: [userId],

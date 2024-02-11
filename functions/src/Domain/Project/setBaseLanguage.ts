@@ -7,6 +7,7 @@ import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {verifyLanguage} from "../../Common/verifyLanguage";
 
 export const setBaseLanguage = onCall(async (request) => {
   logger.info("onCall setBaseLanguage", request.data);
@@ -16,6 +17,7 @@ export const setBaseLanguage = onCall(async (request) => {
   const baseLanguage = request.data.baseLanguage;
   const projectRef = db.collection("projects").doc(projectId);
 
+  verifyLanguage(baseLanguage);
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.setBaseLanguage);

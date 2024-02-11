@@ -7,6 +7,7 @@ import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {verifyTechnologies} from "../../Common/verifyTechnology";
 
 export const setProjectTechnologies = onCall(async (request) => {
   logger.info("onCall setProjectTechnologies", request.data);
@@ -15,6 +16,7 @@ export const setProjectTechnologies = onCall(async (request) => {
   const projectId = request.data.projectId;
   const technologies = request.data.technologies;
 
+  verifyTechnologies(technologies);
   const userId = verifyAuthentication(request).uid;
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.setProjectTechnologies);
