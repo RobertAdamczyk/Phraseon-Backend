@@ -1,15 +1,14 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const deleteProject = onCall(async (request) => {
   logger.info("onCall deleteProject", request.data);
 
-  const db = admin.firestore();
   const projectId = request.data.projectId;
 
   const projectRef = db.collection("projects").doc(projectId);
@@ -21,7 +20,7 @@ export const deleteProject = onCall(async (request) => {
     const projectDoc = await projectRef.get();
 
     if (!projectDoc.exists) {
-      throw new HttpsError("not-found", "Project not found.");
+      throw new HttpsError("not-found", "Project not found."); // TODO: ERROR CODE
     }
 
     const userId = verifyAuthentication(request).uid;

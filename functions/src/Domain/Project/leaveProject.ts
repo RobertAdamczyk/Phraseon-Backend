@@ -1,15 +1,15 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
+import {db} from "../../Common/firebaseConfiguration";
+import {FieldValue} from "firebase-admin/firestore";
 
 export const leaveProject = onCall(async (request) => {
   logger.info("onCall leaveProject", request.data);
 
-  const db = admin.firestore();
   const projectId = request.data.projectId;
 
   const projectRef = db.collection("projects").doc(projectId);
@@ -22,7 +22,7 @@ export const leaveProject = onCall(async (request) => {
 
   const batch = db.batch();
   batch.update(projectRef, {
-    members: admin.firestore.FieldValue.arrayRemove(userId),
+    members: FieldValue.arrayRemove(userId),
   });
   batch.delete(memberRef);
 

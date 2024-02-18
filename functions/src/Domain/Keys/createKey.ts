@@ -1,6 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {KeyStatus} from "../../Model/keyStatus";
 import {verifyKeyId} from "../../Common/verifyKeyId";
 import {getUserRole} from "../../Common/getUserRole";
@@ -11,6 +10,8 @@ import {verifyLanguage} from "../../Common/verifyLanguage";
 import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {verifyPhraseContentLength} from "../../Common/verifyPhraseContentLength";
+import {db} from "../../Common/firebaseConfiguration";
+import {FieldValue} from "firebase-admin/firestore";
 
 export const createKey = onCall(async (request) => {
   logger.info("onCall createKey", request.data);
@@ -29,12 +30,12 @@ export const createKey = onCall(async (request) => {
   const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
   checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
 
-  const documentRef = admin.firestore().collection("projects").doc(projectId).collection("keys").doc(keyId);
+  const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 
   const newDoc = {
     "translation": {[language]: translation},
-    "createdAt": admin.firestore.FieldValue.serverTimestamp(),
-    "lastUpdatedAt": admin.firestore.FieldValue.serverTimestamp(),
+    "createdAt": FieldValue.serverTimestamp(),
+    "lastUpdatedAt": FieldValue.serverTimestamp(),
     "status": {[language]: KeyStatus.review},
   };
 

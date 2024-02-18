@@ -1,6 +1,6 @@
-import * as admin from "firebase-admin";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
+import {db} from "./firebaseConfiguration";
 
 /**
  * Retrieves the owner ID of a specified project.
@@ -13,7 +13,6 @@ import {HttpsError} from "firebase-functions/v2/https";
  *                        Throws error with ErrorCode.DatabaseError if the owner ID is missing in the project data.
  */
 export async function getProjectOwnerId(projectId: string): Promise<string> {
-  const db = admin.firestore();
   const projectRef = db.collection("projects").doc(projectId);
   const doc = await projectRef.get();
 

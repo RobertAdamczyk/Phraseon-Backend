@@ -1,7 +1,7 @@
-import * as admin from "firebase-admin";
 import {Role} from "../Model/role";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
+import {db} from "./firebaseConfiguration";
 
 /**
  * Retrieves the role of a user in a specific project. It queries the Firestore database
@@ -14,7 +14,6 @@ import {HttpsError} from "firebase-functions/v2/https";
  * @throws {HttpsError} Throws a error with ErrorCode.RoleNotFound if the role of the user is not found or undefined.
  */
 export async function getUserRole(projectId: string, userId: string): Promise<Role> {
-  const db = admin.firestore();
   const memberRef = db.collection("projects").doc(projectId).collection("members").doc(userId);
   const doc = await memberRef.get();
 

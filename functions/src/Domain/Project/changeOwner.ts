@@ -1,17 +1,16 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {Role} from "../../Model/role";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {isUserProjectMember} from "../../Common/isUserProjectMember";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const changeOwner = onCall(async (request) => {
   logger.info("onCall changeOwner", request.data);
 
-  const db = admin.firestore();
   const newOwnerEmail = request.data.newOwnerEmail;
   const projectId = request.data.projectId;
 

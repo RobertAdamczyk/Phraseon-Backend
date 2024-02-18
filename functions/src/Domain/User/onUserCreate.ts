@@ -1,7 +1,8 @@
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import {v4 as uuidv4} from "uuid";
+import {FieldValue} from "firebase-admin/firestore";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const onUserCreate = functions.auth.user().onCreate(async (user) => {
   logger.info("onUserCreate", user);
@@ -10,13 +11,13 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
 
   const newDoc = {
     "email": user.email,
-    "createdAt": admin.firestore.FieldValue.serverTimestamp(),
+    "createdAt": FieldValue.serverTimestamp(),
     "name": "",
     "surname": "",
     "subscriptionId": subscriptionId,
   };
 
-  const documentRef = admin.firestore().collection("users").doc(user.uid);
+  const documentRef = db.collection("users").doc(user.uid);
   await documentRef.set(newDoc);
   return {message: "Document created successfully."};
 });

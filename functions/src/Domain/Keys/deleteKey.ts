@@ -1,16 +1,15 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const deleteKey = onCall(async (request) => {
   logger.info("onCall deleteKey", request.data);
-  const db = admin.firestore();
   const keyIdToDelete = request.data.keyId;
   const projectId = request.data.projectId;
   const projectRef = db.collection("projects").doc(projectId);

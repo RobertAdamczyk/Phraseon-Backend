@@ -1,6 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {Project} from "../../Model/project";
 import {Member} from "../../Model/member";
 import {Role} from "../../Model/role";
@@ -12,11 +11,12 @@ import {checkUserSubscription} from "../../Common/checkSubscription";
 import {SubscriptionPlan} from "../../Model/subscriptionPlan";
 import {verifyTechnologies} from "../../Common/verifyTechnology";
 import {generateSecuredApiKey} from "../../Common/algoliaClient";
+import {db} from "../../Common/firebaseConfiguration";
+import {FieldValue} from "firebase-admin/firestore";
 
 export const createProject = onCall(async (request) => {
   logger.info("onCall createProject", request.data);
 
-  const db = admin.firestore();
   const languages = request.data.languages;
   const technologies = request.data.technologies;
   const baseLanguage = request.data.baseLanguage;
@@ -45,7 +45,7 @@ export const createProject = onCall(async (request) => {
     members: [userId],
     owner: userId,
     securedAlgoliaApiKey: securedAlgoliaApiKey,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   };
 
   batch.set(projectRef, project);

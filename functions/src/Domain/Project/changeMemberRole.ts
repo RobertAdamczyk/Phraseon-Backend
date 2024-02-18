@@ -1,6 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {verifyRole} from "../../Common/verifyRole";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
@@ -8,11 +7,11 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkProjectOwnerTeamSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const changeMemberRole = onCall(async (request) => {
   logger.info("onCall changeMemberRole", request.data);
 
-  const db = admin.firestore();
   const userIdToChange = request.data.userId;
   const projectId = request.data.projectId;
 

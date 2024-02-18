@@ -1,15 +1,15 @@
 import {onDocumentUpdated} from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import * as deepl from "deepl-node";
 import {KeyStatus} from "../../Model/keyStatus";
+import {db} from "../../Common/firebaseConfiguration";
+import {FieldValue} from "firebase-admin/firestore";
 
 export const onProjectLanguagesUpdate = onDocumentUpdated("projects/{projectId}", async (event) => {
   logger.info("onCall onProjectLanguagesUpdate", event.data?.after.data());
   const newValue = event.data?.after.data();
   const oldvalue = event.data?.before.data();
   const projectId = event.params.projectId;
-  const db = admin.firestore();
 
   if (JSON.stringify(oldvalue?.languages) !== JSON.stringify(newValue?.languages)) {
     console.log("Languages changed in project " + projectId);
@@ -30,7 +30,7 @@ export const onProjectLanguagesUpdate = onDocumentUpdated("projects/{projectId}"
         for (const lang of removedLanguages) {
           const fieldName = "translation." + lang;
           await keyRef.update({
-            [fieldName]: admin.firestore.FieldValue.delete(),
+            [fieldName]: FieldValue.delete(),
           });
         }
       }

@@ -1,6 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {Member} from "../../Model/member";
 import {ErrorCode} from "../../Model/errorCode";
 import {isUserProjectMember} from "../../Common/isUserProjectMember";
@@ -11,11 +10,12 @@ import {Action, assertPermission} from "../../Common/assertPermission";
 import {getUserData} from "../../Common/getUserData";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkProjectOwnerTeamSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
+import {db} from "../../Common/firebaseConfiguration";
+import {FieldValue} from "firebase-admin/firestore";
 
 export const addProjectMember = onCall(async (request) => {
   logger.info("onCall addProjectMember", request.data);
 
-  const db = admin.firestore();
   const userIdToAdd = request.data.userId;
   const projectId = request.data.projectId;
 
@@ -49,7 +49,7 @@ export const addProjectMember = onCall(async (request) => {
   const batch = db.batch();
 
   batch.update(projectRef, {
-    members: admin.firestore.FieldValue.arrayUnion(userIdToAdd),
+    members: FieldValue.arrayUnion(userIdToAdd),
   });
   batch.set(memberRef, member);
 

@@ -1,6 +1,6 @@
-import * as admin from "firebase-admin";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
+import {db} from "./firebaseConfiguration";
 
 /**
  * Checks if a user is a member of a specific project.
@@ -18,7 +18,6 @@ import {HttpsError} from "firebase-functions/v2/https";
  *                        if the project data does not exist.
  */
 export async function isUserProjectMember(projectId: string, userId: string): Promise<boolean> {
-  const db = admin.firestore();
   const projectRef = db.collection("projects").doc(projectId);
 
   const projectDoc = await projectRef.get();

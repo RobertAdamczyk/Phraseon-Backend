@@ -1,13 +1,12 @@
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
 import {isUserProjectMember} from "../../Common/isUserProjectMember";
 import {ErrorCode} from "../../Model/errorCode";
 import {Language} from "../../Model/language";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const getKeys = onRequest(async (request, response) => {
   logger.info("onRequest getKeys", request);
-  const db = admin.firestore();
 
   const projectId = request.query.projectId as string;
   const userAccessKey = request.headers["x-access-key"] as string; // userId

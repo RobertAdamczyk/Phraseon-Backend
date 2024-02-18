@@ -1,6 +1,6 @@
 import {onDocumentUpdated} from "firebase-functions/v2/firestore";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const onUserDataUpdate = onDocumentUpdated("users/{userId}", async (event) => {
   const newValue = event.data?.after.data();
@@ -16,11 +16,11 @@ export const onUserDataUpdate = onDocumentUpdated("users/{userId}", async (event
     return null;
   }
   // Removing the user's ID from 'members' array in all projects within Firestore
-  const projectsRef = admin.firestore().collection("projects");
+  const projectsRef = db.collection("projects");
   const snapshot = await projectsRef.where("members", "array-contains", userId).get();
 
   if (!snapshot.empty) {
-    const batch = admin.firestore().batch();
+    const batch = db.batch();
     snapshot.forEach(async (projectDoc) => {
       // Delete the user's document from the nested 'members' collection
       const memberDocRef = projectDoc.ref.collection("members").doc(userId);

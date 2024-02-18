@@ -2,12 +2,12 @@ import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
 import {Storage} from "@google-cloud/storage";
 import * as os from "os";
-import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
 import {Environment, NotificationTypeV2, SignedDataVerifier, Subtype} from "@apple/app-store-server-library";
 import {SubscriptionStatus} from "../../Model/subscriptionStatus";
 import {getConfiguration} from "../../Common/getConfiguration";
+import {db} from "../../Common/firebaseConfiguration";
 
 /**
  * Handles subscription change notifications in the Production environment.
@@ -50,7 +50,6 @@ export const notifySubscriptionChangeSandbox = onRequest(async (request, respons
  * @param {string} signedPayload The signed payload from the request body to be verified and processed.
  */
 async function processNotification(verifier: SignedDataVerifier, signedPayload: string) {
-  const db = admin.firestore();
   const verifiedNotification = await verifier.verifyAndDecodeNotification(signedPayload);
   logger.info("verifiedNotification", verifiedNotification);
   if (verifiedNotification?.data?.signedTransactionInfo) {

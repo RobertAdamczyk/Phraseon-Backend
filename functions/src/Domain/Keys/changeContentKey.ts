@@ -1,6 +1,5 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
@@ -10,6 +9,8 @@ import {verifyLanguage} from "../../Common/verifyLanguage";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
 import {verifyPhraseContentLength} from "../../Common/verifyPhraseContentLength";
+import {db} from "../../Common/firebaseConfiguration";
+import {FieldValue} from "firebase-admin/firestore";
 
 export const changeContentKey = onCall(async (request) => {
   logger.info("onCall changeContentKey", request.data);
@@ -17,7 +18,6 @@ export const changeContentKey = onCall(async (request) => {
   const keyId = request.data.keyId;
   const translation = request.data.translation;
   const language = request.data.language;
-  const db = admin.firestore();
 
   verifyPhraseContentLength(translation);
   verifyKeyId(keyId);
@@ -36,7 +36,7 @@ export const changeContentKey = onCall(async (request) => {
   try {
     await documentRef.update({
       ["translation." + language]: translation,
-      "lastUpdatedAt": admin.firestore.FieldValue.serverTimestamp(),
+      "lastUpdatedAt": FieldValue.serverTimestamp(),
     });
     return;
   } catch (error) {

@@ -1,6 +1,7 @@
-import * as admin from "firebase-admin";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
+import {db} from "./firebaseConfiguration";
+import {DocumentData} from "firebase-admin/firestore";
 
 /**
  * Retrieves the user data for a given user ID from Firestore.
@@ -14,8 +15,7 @@ import {HttpsError} from "firebase-functions/v2/https";
  * @return {Promise<admin.firestore.DocumentData>} - A promise that resolves to the user's data document.
  * @throws {HttpsError} - Throws a HttpsError UserNotFound if no user data is found for the given `userId`.
  */
-export async function getUserData(userId: string): Promise<admin.firestore.DocumentData> {
-  const db = admin.firestore();
+export async function getUserData(userId: string): Promise<DocumentData> {
   const userDoc = await db.collection("users").doc(userId).get();
   const userData = userDoc.data();
 

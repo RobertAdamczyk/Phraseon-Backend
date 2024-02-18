@@ -7,7 +7,6 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import * as admin from "firebase-admin";
 export * from "./Domain/User/isUserProjectOwner";
 export * from "./Domain/User/onUserCreate";
 export * from "./Domain/User/onUserDelete";
@@ -32,9 +31,3 @@ export * from "./Domain/Keys/deleteKey";
 export * from "./Domain/Keys/approveTranslation";
 export * from "./Domain/User/notifySubscriptionChange";
 export * from "./Domain/User/startTrial";
-
-admin.initializeApp();
-admin.firestore().settings({ignoreUndefinedProperties: true});
-
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript

@@ -1,8 +1,8 @@
-import * as admin from "firebase-admin";
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Timestamp} from "firebase-admin/firestore";
 import {SubscriptionPlanValue, SubscriptionPlan} from "../Model/subscriptionPlan";
+import {db} from "./firebaseConfiguration";
 
 /**
  * Checks the subscription status of a user.
@@ -17,8 +17,6 @@ import {SubscriptionPlanValue, SubscriptionPlan} from "../Model/subscriptionPlan
  *                        Throws error with ErrorCode.AccessExpired if the subscription has expired.
  */
 export async function checkUserSubscription(userId: string): Promise<SubscriptionPlanValue> {
-  const db = admin.firestore();
-
   const userDoc = await db.collection("users").doc(userId).get();
   if (!userDoc.exists) {
     throw new HttpsError("not-found", ErrorCode.DatabaseError);

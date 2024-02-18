@@ -2,15 +2,14 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import * as deepl from "deepl-node";
 import * as logger from "firebase-functions/logger";
-import * as admin from "firebase-admin";
 import {Language} from "../../Model/language";
 import {KeyStatus} from "../../Model/keyStatus";
+import {db} from "../../Common/firebaseConfiguration";
 
 export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}", async (event) => {
   logger.info("onCall onKeyCreate", event);
   const projectId = event.params.projectId;
   const keyId = event.params.keyId;
-  const db = admin.firestore();
   const projectRef = db.collection("projects").doc(projectId);
   const keyRef = projectRef.collection("keys").doc(keyId);
 
