@@ -11,6 +11,7 @@ import {verifyLanguage, verifyLanguages} from "../../Common/verifyLanguage";
 import {checkUserSubscription} from "../../Common/checkSubscription";
 import {SubscriptionPlan} from "../../Model/subscriptionPlan";
 import {verifyTechnologies} from "../../Common/verifyTechnology";
+import {generateSecuredApiKey} from "../../Common/algoliaClient";
 
 export const createProject = onCall(async (request) => {
   logger.info("onCall createProject", request.data);
@@ -32,8 +33,10 @@ export const createProject = onCall(async (request) => {
   }
 
   const batch = db.batch();
-
   const projectRef = db.collection("projects").doc();
+
+  const securedAlgoliaApiKey = generateSecuredApiKey(projectRef.id);
+
   const project: Project = {
     name: request.data.name,
     technologies: technologies,
@@ -41,6 +44,8 @@ export const createProject = onCall(async (request) => {
     baseLanguage: baseLanguage,
     members: [userId],
     owner: userId,
+    securedAlgoliaApiKey: securedAlgoliaApiKey,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 
   batch.set(projectRef, project);
@@ -63,4 +68,3 @@ export const createProject = onCall(async (request) => {
     throw new HttpsError("unknown", ErrorCode.DatabaseError);
   }
 });
-

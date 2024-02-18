@@ -16,4 +16,5 @@ export enum ErrorCode {
     AccessDenied = "ACCESS_DENIED",
     ProjectCreationLimit = "PROJECT_CREATION_LIMIT",
     PhraseContentTooLong = "PHRASE_CONTENT_TOO_LONG",
+    AlgoliaConfigurationMissing = "ALGOLIA_CONFIGURATION_MISSING",
 }

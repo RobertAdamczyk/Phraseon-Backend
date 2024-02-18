@@ -1,3 +1,4 @@
+import {FieldValue} from "firebase-admin/firestore";
 import {Language} from "./Language";
 import {Technology} from "./technology";
 
@@ -8,4 +9,6 @@ export interface Project {
     baseLanguage: Language;
     members: string[];
     owner: string;
+    securedAlgoliaApiKey: string;
+    createdAt: FieldValue;
 }
