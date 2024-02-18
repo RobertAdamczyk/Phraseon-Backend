@@ -1,6 +1,4 @@
-import {ErrorCode} from "../Model/errorCode";
-import {HttpsError} from "firebase-functions/v2/https";
-import {db} from "./firebaseConfiguration";
+import {getProjectData} from "./getProjectData";
 
 /**
  * Checks if a user is a member of a specific project.
@@ -18,14 +16,6 @@ import {db} from "./firebaseConfiguration";
  *                        if the project data does not exist.
  */
 export async function isUserProjectMember(projectId: string, userId: string): Promise<boolean> {
-  const projectRef = db.collection("projects").doc(projectId);
-
-  const projectDoc = await projectRef.get();
-  const projectData = projectDoc.data();
-
-  if (!projectData) {
-    throw new HttpsError("not-found", ErrorCode.ProjectNotFound);
-  }
-
+  const projectData = await getProjectData(projectId);
   return projectData.members.includes(userId);
 }

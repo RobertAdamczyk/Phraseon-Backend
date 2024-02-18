@@ -1,6 +1,6 @@
 import {ErrorCode} from "../Model/errorCode";
 import {HttpsError} from "firebase-functions/v2/https";
-import {db} from "./firebaseConfiguration";
+import {getProjectData} from "./getProjectData";
 
 /**
  * Retrieves the owner ID of a specified project.
@@ -13,15 +13,8 @@ import {db} from "./firebaseConfiguration";
  *                        Throws error with ErrorCode.DatabaseError if the owner ID is missing in the project data.
  */
 export async function getProjectOwnerId(projectId: string): Promise<string> {
-  const projectRef = db.collection("projects").doc(projectId);
-  const doc = await projectRef.get();
-
-  if (!doc.exists) {
-    throw new HttpsError("not-found", ErrorCode.ProjectNotFound);
-  }
-
-  const projectData = doc.data();
-  const ownerId = projectData?.owner;
+  const projectData = await getProjectData(projectId);
+  const ownerId = projectData.owner;
   if (!ownerId) {
     throw new HttpsError("not-found", ErrorCode.DatabaseError);
   }

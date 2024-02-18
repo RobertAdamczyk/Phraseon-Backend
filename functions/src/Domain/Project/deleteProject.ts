@@ -5,6 +5,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {db} from "../../Common/firebaseConfiguration";
+import {getProjectData} from "../../Common/getProjectData";
 
 export const deleteProject = onCall(async (request) => {
   logger.info("onCall deleteProject", request.data);
@@ -17,17 +18,11 @@ export const deleteProject = onCall(async (request) => {
   const deletedProjectsRef = db.collection("deleted_projects");
 
   try {
-    const projectDoc = await projectRef.get();
-
-    if (!projectDoc.exists) {
-      throw new HttpsError("not-found", "Project not found."); // TODO: ERROR CODE
-    }
-
     const userId = verifyAuthentication(request).uid;
     const role = await getUserRole(projectId, userId);
     assertPermission(role, Action.deleteProject);
 
-    const projectData = projectDoc.data();
+    const projectData = await getProjectData(projectId);
     const deletedProjectRef = deletedProjectsRef.doc(projectId);
 
     // Get all keys from project

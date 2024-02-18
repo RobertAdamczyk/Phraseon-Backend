@@ -1,10 +1,10 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
-import {HttpsError} from "firebase-functions/v2/https";
 import * as deepl from "deepl-node";
 import * as logger from "firebase-functions/logger";
 import {Language} from "../../Model/language";
 import {KeyStatus} from "../../Model/keyStatus";
 import {db} from "../../Common/firebaseConfiguration";
+import {getProjectData} from "../../Common/getProjectData";
 
 export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}", async (event) => {
   logger.info("onCall onKeyCreate", event);
@@ -20,12 +20,7 @@ export const onKeyCreate = onDocumentCreated("projects/{projectId}/keys/{keyId}"
   }
   const data = snapshot.data();
 
-  const projectDoc = await projectRef.get();
-  const projectData = projectDoc.data();
-
-  if (projectData === undefined || projectData === null) {
-    throw new HttpsError("not-found", "Data not found.");
-  }
+  const projectData = await getProjectData(projectId);
 
   const baseLanguage = projectData.baseLanguage;
   const textToTranslation = data.translation[baseLanguage];
