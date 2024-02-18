@@ -55,13 +55,13 @@ export function generateSecuredApiKey(projectId: string): string {
  * by setting the appropriate attributes for faceting. This allows for later
  * filtering of search results based on project-specific criteria.
  *
+ * @param {string} indexName The name of the index where keys are stored.
  * @return {SearchIndex} The Algolia index object that has been initialized and configured.
  */
-export function initAlgoliaIndex(): SearchIndex {
+export function initAlgoliaIndex(indexName: string): SearchIndex {
   const algoliaClient = initializeAlgoliaClient();
 
-  const algoliaIndexName = "main";
-  const algoliaIndex = algoliaClient.initIndex(algoliaIndexName);
+  const algoliaIndex = algoliaClient.initIndex(indexName);
   algoliaIndex.setSettings({
     attributesForFaceting: [
       "filterOnly(projectId)",

@@ -46,6 +46,7 @@ export const createProject = onCall(async (request) => {
     owner: userId,
     securedAlgoliaApiKey: securedAlgoliaApiKey,
     createdAt: FieldValue.serverTimestamp(),
+    algoliaIndexName: "GLOBAL_PROJECTS_KEYS",
   };
 
   batch.set(projectRef, project);

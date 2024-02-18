@@ -11,4 +11,5 @@ export interface Project {
     owner: string;
     securedAlgoliaApiKey: string;
     createdAt: FieldValue;
+    algoliaIndexName: string;
 }
