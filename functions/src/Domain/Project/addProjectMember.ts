@@ -9,7 +9,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {getUserData} from "../../Common/getUserData";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerTeamSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {db} from "../../Common/firebaseConfiguration";
 import {FieldValue} from "firebase-admin/firestore";
 
@@ -27,8 +27,7 @@ export const addProjectMember = onCall(async (request) => {
   assertPermission(role, Action.addProjectMember);
 
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   if (await isUserProjectMember(projectId, userIdToAdd)) {
     throw new HttpsError("already-exists", ErrorCode.AlreadyMember);

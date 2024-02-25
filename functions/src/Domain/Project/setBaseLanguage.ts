@@ -5,7 +5,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {verifyLanguage} from "../../Common/verifyLanguage";
 import {db} from "../../Common/firebaseConfiguration";
 
@@ -22,8 +22,7 @@ export const setBaseLanguage = onCall(async (request) => {
   assertPermission(role, Action.setBaseLanguage);
 
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   try {
     await projectRef.update({"baseLanguage": baseLanguage});

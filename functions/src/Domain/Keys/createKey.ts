@@ -7,7 +7,7 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyLanguage} from "../../Common/verifyLanguage";
-import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
 import {verifyPhraseContentLength} from "../../Common/verifyPhraseContentLength";
 import {db} from "../../Common/firebaseConfiguration";
@@ -27,8 +27,7 @@ export const createKey = onCall(async (request) => {
   const role = await getUserRole(projectId, userId);
   assertPermission(role, Action.createKey);
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 

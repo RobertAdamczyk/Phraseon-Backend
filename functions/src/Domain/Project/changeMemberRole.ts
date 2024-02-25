@@ -6,7 +6,7 @@ import {verifyAuthentication} from "../../Common/verifyAuthentication";
 import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerTeamSubscriptionPlan, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {db} from "../../Common/firebaseConfiguration";
 
 export const changeMemberRole = onCall(async (request) => {
@@ -23,8 +23,7 @@ export const changeMemberRole = onCall(async (request) => {
   assertPermission(role, Action.changeMemberRole);
 
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlan(projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   verifyRole(request.data.role);
 

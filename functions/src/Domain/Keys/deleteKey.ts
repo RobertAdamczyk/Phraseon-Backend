@@ -5,7 +5,7 @@ import {getUserRole} from "../../Common/getUserRole";
 import {Action, assertPermission} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkUserSubscription, checkProjectOwnerTeamSubscriptionPlanIfNecessary} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {db} from "../../Common/firebaseConfiguration";
 
 export const deleteKey = onCall(async (request) => {
@@ -19,8 +19,7 @@ export const deleteKey = onCall(async (request) => {
   assertPermission(role, Action.deleteKey);
 
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   const keyRefToDelete = projectRef.collection("keys").doc(keyIdToDelete);
 

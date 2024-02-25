@@ -20,7 +20,7 @@ export const startTrial = onCall(async (request) => {
   try {
     if (!userData.subscriptionPlan && !userData.subscriptionValidUntil && !userData.subscriptionStatus) {
       userRef.update({
-        "subscriptionPlan": SubscriptionPlan.current.team,
+        "subscriptionPlan": SubscriptionPlan.current.monthly,
         "subscriptionValidUntil": subscriptionValidUntil,
         "subscriptionStatus": SubscriptionStatus.trial,
       });

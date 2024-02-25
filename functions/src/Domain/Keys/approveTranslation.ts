@@ -7,7 +7,7 @@ import {assertPermission, Action} from "../../Common/assertPermission";
 import {ErrorCode} from "../../Model/errorCode";
 import {verifyLanguage} from "../../Common/verifyLanguage";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {db} from "../../Common/firebaseConfiguration";
 
 export const approveTranslation = onCall(async (request) => {
@@ -23,8 +23,7 @@ export const approveTranslation = onCall(async (request) => {
   assertPermission(role, Action.approveTranslation);
 
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 

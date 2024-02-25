@@ -7,7 +7,7 @@ import {Action, assertPermission} from "../../Common/assertPermission";
 import {verifyKeyId} from "../../Common/verifyKeyId";
 import {verifyLanguage} from "../../Common/verifyLanguage";
 import {getProjectOwnerId} from "../../Common/getProjectOwnerId";
-import {checkProjectOwnerTeamSubscriptionPlanIfNecessary, checkUserSubscription} from "../../Common/checkSubscription";
+import {checkUserSubscription} from "../../Common/checkSubscription";
 import {verifyPhraseContentLength} from "../../Common/verifyPhraseContentLength";
 import {db} from "../../Common/firebaseConfiguration";
 import {FieldValue} from "firebase-admin/firestore";
@@ -28,8 +28,7 @@ export const changeContentKey = onCall(async (request) => {
   assertPermission(role, Action.changeContentKey);
 
   const projectOwnerId = await getProjectOwnerId(projectId);
-  const projectOwnerSubscriptionPlan = await checkUserSubscription(projectOwnerId);
-  checkProjectOwnerTeamSubscriptionPlanIfNecessary(userId, projectOwnerId, projectOwnerSubscriptionPlan);
+  await checkUserSubscription(projectOwnerId);
 
   const documentRef = db.collection("projects").doc(projectId).collection("keys").doc(keyId);
 
