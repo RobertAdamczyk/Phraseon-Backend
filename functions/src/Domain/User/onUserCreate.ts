@@ -12,12 +12,10 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
   const newDoc = {
     "email": user.email,
     "createdAt": FieldValue.serverTimestamp(),
-    "name": "",
-    "surname": "",
     "subscriptionId": subscriptionId,
   };
 
   const documentRef = db.collection("users").doc(user.uid);
-  await documentRef.set(newDoc);
+  await documentRef.set(newDoc, {merge: true});
   return {message: "Document created successfully."};
 });
