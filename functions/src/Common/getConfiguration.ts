@@ -21,6 +21,7 @@ export function getConfiguration(): ProjectConfiguration {
       algoliaAppId: process.env.ALGOLIA_APP_ID_INHOUSE,
       algoliaAdminKey: process.env.ALGOLIA_ADMIN_KEY_INHOUSE,
       algoliaSearchKey: process.env.ALGOLIA_SEARCH_KEY_INHOUSE,
+      appleAppId: undefined,
     };
     return environment;
   } else if (projectId === ProjectId.live) {
@@ -31,6 +32,7 @@ export function getConfiguration(): ProjectConfiguration {
       algoliaAppId: process.env.ALGOLIA_APP_ID_LIVE,
       algoliaAdminKey: process.env.ALGOLIA_ADMIN_KEY_LIVE,
       algoliaSearchKey: process.env.ALGOLIA_SEARCH_KEY_LIVE,
+      appleAppId: process.env.APPLE_APP_ID,
     };
     return environment;
   }
@@ -44,6 +46,7 @@ interface ProjectConfiguration {
     algoliaAppId: string | undefined;
     algoliaAdminKey: string | undefined,
     algoliaSearchKey: string | undefined,
+    appleAppId: string | undefined,
 }
 
 enum Build {

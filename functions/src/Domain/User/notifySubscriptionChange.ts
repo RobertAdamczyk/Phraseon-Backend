@@ -20,7 +20,15 @@ export const notifySubscriptionChangeProduction = onRequest(async (request, resp
   logger.info("Start of notifySubscriptionChange in Production environment");
   const projectEnvironment = getConfiguration();
   const appleRootCAs: Buffer[] = await loadAppleRootCAs();
-  const verifier = new SignedDataVerifier(appleRootCAs, true, Environment.PRODUCTION, projectEnvironment.bundleId);
+
+  if (!projectEnvironment.appleAppId) {
+    response.status(500).send("APP ID NOT FOUND");
+    return;
+  }
+
+  const verifier = new SignedDataVerifier(
+    appleRootCAs, true, Environment.PRODUCTION, projectEnvironment.bundleId, parseInt(projectEnvironment.appleAppId)
+  );
 
   await processNotification(verifier, request.body.signedPayload);
   response.status(200).send("OK");
